@@ -4,7 +4,7 @@
 decision, not forwards from the source system.**
 
 Built by [Celnic Consulting](https://www.linkedin.com/company/celnic-consulting).
-Live app: _add your Streamlit URL here after deploying_
+Live app: **https://celnic-msd.streamlit.app**
 
 ---
 

@@ -20,7 +20,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
-st.set_page_config(layout="wide", page_title="MSD Social Support Explorer", page_icon="🧭")
+st.set_page_config(layout="wide", page_title="Social Support Statistics", page_icon="🧭")
 
 # ====================SESSION====================
 # Local DuckDB stands in for get_active_session(). Everything downstream goes
@@ -552,8 +552,11 @@ def get_people_supported(df_db_schema):
 
 # ====================SIDEBAR====================
 def render_sidebar():
-    st.sidebar.title("🧭 MSD Social Support Explorer")
-    st.sidebar.caption("Published Ministry of Social Development statistics, 2010–2026.")
+    st.sidebar.title("🧭 Social Support Statistics")
+    st.sidebar.caption(
+        "Derived from publicly available data: Ministry of Social Development "
+        "(including StudyLink), Ministry of Education and the Treasury."
+    )
 
     quarters = get_quarter_options(df_db_schema)
     qlist = quarters.PERIOD.tolist()
@@ -595,9 +598,13 @@ def render_sidebar():
 
     st.sidebar.markdown("---")
     st.sidebar.info(
-        "**Every figure on this page is published MSD data.** No synthetic or modelled "
-        "values are used. Suppressed cells stay blank rather than becoming zero. "
-        "Map markers are indicative area centroids, not boundaries."
+        "**Every figure on this page is published New Zealand government data**, from "
+        "the Ministry of Social Development (benefits, housing, hardship and StudyLink), "
+        "the Ministry of Education (Education Counts tertiary participation) and the "
+        "Treasury (core Crown expense tables). No synthetic or modelled values are used. "
+        "Suppressed cells stay blank rather than becoming zero. Map markers are "
+        "indicative area centroids, not boundaries. Every source file is listed in the "
+        "Pipeline tab."
     )
 
     qsort = dict(zip(quarters.PERIOD, quarters.PERIOD_SORT))
@@ -886,6 +893,41 @@ def render_tab_all_assistance(f):
     render_assistance_people()
     st.markdown("---")
     render_assistance_detail(assistance)
+
+
+def render_header():
+    """Hazard-striped provenance banner shown above every tab.
+
+    The application is built from public releases but is not published by, nor
+    endorsed by, the agencies that produced them, so that is stated before any
+    figure is shown rather than buried in a footnote.
+    """
+    st.html(
+        """
+        <div style="border:3px solid #111; border-radius:6px; overflow:hidden;
+                    margin:0 0 14px 0; font-family:sans-serif;">
+          <div style="height:14px; background:repeating-linear-gradient(
+                        45deg, #FFD100 0 14px, #111 14px 28px);"></div>
+          <div style="background:#FFD100; color:#111; padding:12px 16px;">
+            <div style="font-weight:800; font-size:15px; letter-spacing:.02em;">
+              &#9888;&#65039; BUILT FROM NEW ZEALAND GOVERNMENT DATA &mdash;
+              NOT AN OFFICIAL GOVERNMENT PRODUCT
+            </div>
+            <div style="font-size:13.5px; line-height:1.5; margin-top:6px;">
+              Figures are reproduced from public releases by the
+              <b>Ministry of Social Development</b> (including <b>StudyLink</b>),
+              the <b>Ministry of Education</b> and <b>the Treasury</b>.
+              This application is produced independently by Celnic Consulting and
+              <b>does not represent the views, policy or official statistics of those
+              departments</b>. Every original source file, with its download date and
+              checksum, is listed in the <b>&#9881;&#65039; Pipeline</b> tab.
+            </div>
+          </div>
+          <div style="height:14px; background:repeating-linear-gradient(
+                        45deg, #FFD100 0 14px, #111 14px 28px);"></div>
+        </div>
+        """
+    )
 
 
 # ====================VISUALISATION====================
@@ -1739,6 +1781,7 @@ def main():
     if not os.path.exists(DB_PATH):
         st.error("Data file not found at %s." % DB_PATH)
         return
+    render_header()
     filters = render_sidebar()
     render_main_tabs(filters)
 
