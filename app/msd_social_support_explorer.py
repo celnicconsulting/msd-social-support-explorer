@@ -1,5 +1,52 @@
 # ====================IMPORTS====================
-"""MSD Social Support Explorer.
+"""MSD Social Support Explorer — a visual specification in code.
+
+This file is written to be read as the specification of the application it
+draws. Every function states what appears on screen and why it appears that way,
+so the page can be reconstructed from the source without running it.
+
+How to read it
+--------------
+  DATA            one function per visual, returning exactly the grain that
+                  visual needs. Each names the chart or table it feeds.
+  SIDEBAR         the global controls, and what each one filters.
+  TABS            one function per tab, whose docstring is that tab's layout,
+                  block by block, in the order it renders.
+  VISUALISATION   one function per chart or table: what is drawn, on which
+                  axes, in which colours, and the reason behind the choice
+                  wherever the choice is not obvious.
+  STATIC_METHODS  shared helpers with no page of their own.
+  MAIN            page assembly.
+
+The page
+--------
+  hazard-striped provenance banner                        render_header
+  sidebar: period, geography, benefit, ethnicity basis     render_sidebar
+  eight tabs                                              render_main_tabs
+    Overview            how many people are on a main benefit, and who
+    Map                 where they are
+    Housing             emergency housing and the social housing register
+    Hardship            supplementary and hardship assistance
+    StudyLink           student support against total tertiary participation
+    Retirement income   NZ Super and the Veteran's Pension, and their cost
+    All assistance      every programme's spend on one axis
+    Pipeline            where every figure came from
+
+Rules every visual on this page obeys
+-------------------------------------
+  - A control never offers a period, area or benefit its charts cannot answer:
+    each picker is built from the series it filters.
+  - Counts, dollars and percentages never share an axis. VALUE_KIND travels
+    with every row, so a chart filters on the data rather than on the wording
+    of a label.
+  - Suppressed cells stay blank and are captioned as suppressions, never zero.
+  - Total-response ethnicity is never summed, and the chart says which basis it
+    is drawing.
+  - Treasury outturn and forecast use different line styles and are separated
+    by a marked boundary; they are never one series.
+  - Overlapping populations are drawn as lines, never stacked or totalled.
+  - Every table downloads through build_styled_excel, so exports match wherever
+    they came from.
 
 Built to the WCC Snowflake Streamlit conventions: the same section separators,
 @st.cache_data query methods, render_* visual methods and a thin main(). The data
@@ -33,7 +80,13 @@ DB_PATH = os.environ.get(
 )
 df_db_schema = "MSD_MART"
 
+# PALETTE is the ordered sequence for categories with no fixed identity, so any
+# chart drawing an arbitrary set of series looks like every other one.
 PALETTE = ["#2E86AB", "#E4572E", "#17BEBB", "#F6AE2D", "#7B6D8D", "#4C9F70", "#C33C54"]
+
+# BENEFIT_COLOURS pins the named benefit groups instead, so a group keeps the
+# same colour on the Overview area chart, the monthly lines and the snapshot,
+# and a reader can track one benefit across the whole page.
 BENEFIT_COLOURS = {
     "Jobseeker Support": "#2E86AB",
     "Sole Parent Support": "#E4572E",
@@ -46,6 +99,11 @@ BENEFIT_COLOURS = {
 
 @st.cache_resource
 def get_connection():
+    """Read-only DuckDB handle, cached for the session.
+
+    Stands in for get_active_session(). Nothing else in the file opens a
+    connection.
+    """
     return duckdb.connect(DB_PATH, read_only=True)
 
 
@@ -57,8 +115,18 @@ def run_query(sql, params=None):
 
 
 # ====================DATA====================
+# One query per visual, at exactly the grain that visual needs. Nothing here
+# reshapes data for presentation: the mart already carries VALUE_KIND,
+# ETHNICITY_BASIS, IS_SUPPRESSED, IS_PREFERRED_SOURCE and the H3 cells, so a
+# chart filters on columns rather than on the wording of a label. Every
+# docstring names the chart or table the result feeds.
 @st.cache_data(show_spinner=False)
 def get_periods(df_db_schema, period_type):
+    """Every period of one type, from the conformed date dimension.
+
+    Used only where a control needs the full published calendar — the emergency
+    housing quarter picker. Every other picker is built from its own series.
+    """
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, PERIOD_DATE, CALENDAR_YEAR
@@ -85,6 +153,11 @@ def get_quarter_options(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_month_options(df_db_schema):
+    """Months the monthly benefit fact covers — the sidebar "Latest month" picker.
+
+    Built from the fact, not DIM_PERIOD, for the same reason as the quarter
+    slider above.
+    """
     return run_query(
         """
         SELECT DISTINCT PERIOD, PERIOD_SORT FROM {s}.FACT_BENEFIT_MONTHLY
@@ -94,6 +167,12 @@ def get_month_options(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_benefit_groups(df_db_schema):
+    """Working-age benefit groups for the sidebar multiselect.
+
+    The "All main benefits" rollup is excluded because it would double count
+    against its own components on a stacked chart, and the two pensions because
+    they are not working-age support and have their own tab.
+    """
     return run_query(
         """
         SELECT DISTINCT BENEFIT_GROUP_STD AS BENEFIT_GROUP
@@ -106,6 +185,7 @@ def get_benefit_groups(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_geographies(df_db_schema, geo_level):
+    """Area names at one level, with the indicative centroid the map plots."""
     return run_query(
         """
         SELECT GEO_NAME, LATITUDE, LONGITUDE, HAS_COORDINATES
@@ -135,6 +215,7 @@ def get_national_trend(df_db_schema, p_from, p_to, benefit_groups):
 
 @st.cache_data(show_spinner=False)
 def get_monthly_trend(df_db_schema, p_from, p_to):
+    """Monthly recipients by headline benefit — the Overview line chart on the right."""
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, LABEL_1 AS BENEFIT, SUM(VALUE) AS CLIENT_COUNT
@@ -148,6 +229,11 @@ def get_monthly_trend(df_db_schema, p_from, p_to):
 @st.cache_data(show_spinner=False)
 def get_characteristic_breakdown(df_db_schema, period, geo_level, geo_names,
                                  benefit_groups, characteristic):
+    """Recipients split by one characteristic — the three Overview bar charts.
+
+    ETHNICITY_BASIS travels with the rows so the chart can caption which basis
+    it is drawing, and warn when the bars must not be summed.
+    """
     gph = ", ".join(["?"] * len(geo_names)) if geo_names else "''"
     bph = ", ".join(["?"] * len(benefit_groups))
     return run_query(
@@ -166,6 +252,7 @@ def get_characteristic_breakdown(df_db_schema, period, geo_level, geo_names,
 
 @st.cache_data(show_spinner=False)
 def get_latest_snapshot(df_db_schema, period, geo_level, benefit_groups):
+    """One quarter by area and benefit group — the Overview snapshot table and its export."""
     bph = ", ".join(["?"] * len(benefit_groups))
     return run_query(
         """
@@ -179,7 +266,12 @@ def get_latest_snapshot(df_db_schema, period, geo_level, benefit_groups):
 
 @st.cache_data(show_spinner=False)
 def get_map_data(df_db_schema, period, geo_level, benefit_groups):
-    """Client counts joined to indicative centroids and pre-computed H3 cells."""
+    """Client counts joined to indicative centroids and pre-computed H3 cells.
+
+    Feeds the hexagon layer on the Map tab at region, regional council and
+    Auckland local board level. The H3 cells are computed once in the mart, so
+    the app does no geometry at render time.
+    """
     bph = ", ".join(["?"] * len(benefit_groups))
     return run_query(
         """
@@ -197,7 +289,11 @@ def get_map_data(df_db_schema, period, geo_level, benefit_groups):
 
 @st.cache_data(show_spinner=False)
 def get_map_data_ta(df_db_schema, period):
-    """TA-level monthly counts; the quarterly fact sheets do not go below TA totals."""
+    """TA-level monthly counts — the Map tab's default level.
+
+    The quarterly fact sheets do not go below TA totals, so this is the only
+    series fine enough to hexagon at territorial authority level.
+    """
     return run_query(
         """
         SELECT f.GEO_NAME, f.MEASURE, SUM(f.VALUE) AS CLIENT_COUNT,
@@ -214,6 +310,11 @@ def get_map_data_ta(df_db_schema, period):
 
 @st.cache_data(show_spinner=False)
 def get_emergency_housing_trend(df_db_schema):
+    """Monthly emergency housing grants and dollars — the two charts at the top of Housing.
+
+    VALUE_KIND travels with the rows because counts and dollars share the
+    worksheet; the charts filter on it rather than on the wording of the label.
+    """
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, LABEL_1 AS METRIC, VALUE_KIND, SUM(VALUE) AS VALUE
@@ -225,6 +326,11 @@ def get_emergency_housing_trend(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_register_trend(df_db_schema):
+    """Housing Register and Transfer Register applications — the Housing line chart.
+
+    Summed from the territorial authority block, with the totals row and the
+    suppression notes excluded so nothing is counted twice.
+    """
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, MEASURE AS REGISTER, SUM(VALUE) AS VALUE
@@ -239,6 +345,11 @@ def get_register_trend(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_eh_by_ta(df_db_schema, period):
+    """Emergency housing by territorial authority, one quarter — the Housing detail table.
+
+    IS_SUPPRESSED is carried through so the table can state that a blank cell is
+    a confidentiality suppression rather than a zero.
+    """
     return run_query(
         """
         SELECT GEO_NAME AS TERRITORIAL_AUTHORITY, SECTION AS MEASURE_GROUP,
@@ -251,6 +362,11 @@ def get_eh_by_ta(df_db_schema, period):
 
 @st.cache_data(show_spinner=False)
 def get_eh_duration_matrix(df_db_schema):
+    """Households by weeks-in-emergency-housing band — the Housing heatmap.
+
+    The average-duration row is excluded: it shares the band labels but is a
+    different measure entirely.
+    """
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, LABEL_1 AS DURATION_BAND, SUM(VALUE) AS HOUSEHOLDS
@@ -264,6 +380,11 @@ def get_eh_duration_matrix(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_hardship_trend(df_db_schema):
+    """Monthly supplementary and hardship assistance — the two Hardship charts.
+
+    SECTION separates point-in-time recipients from counts of everyone helped
+    during the month, which the two charts keep apart.
+    """
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, SECTION, LABEL_1 AS ASSISTANCE_TYPE,
@@ -276,6 +397,7 @@ def get_hardship_trend(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_food_grants(df_db_schema):
+    """Food Special Needs Grants by regional council — the two food grant charts."""
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, GEO_NAME AS REGIONAL_COUNCIL,
@@ -288,6 +410,7 @@ def get_food_grants(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_supplementary_region(df_db_schema, p_from, p_to):
+    """Supplementary assistance by Work and Income region — the Hardship area chart and table."""
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, GEO_NAME AS WI_REGION, LABEL_1 AS ASSISTANCE_TYPE,
@@ -301,6 +424,7 @@ def get_supplementary_region(df_db_schema, p_from, p_to):
 
 @st.cache_data(show_spinner=False)
 def get_studylink_windows(df_db_schema):
+    """Year-to-date windows published — the StudyLink "Reporting window" picker."""
     return run_query(
         """
         SELECT DISTINCT WINDOW_MONTHS FROM {s}.VW_STUDYLINK_ANNUAL ORDER BY 1
@@ -325,6 +449,7 @@ def get_studylink_annual(df_db_schema, window_months):
 
 @st.cache_data(show_spinner=False)
 def get_studylink_provider(df_db_schema, window_months):
+    """StudyLink recipients and dollars by provider type — the two provider charts."""
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, PRODUCT, PROVIDER_TYPE, PROVIDER_TYPE_STD,
@@ -337,6 +462,11 @@ def get_studylink_provider(df_db_schema, window_months):
 
 @st.cache_data(show_spinner=False)
 def _has_tertiary(df_db_schema):
+    """Whether the Ministry of Education extract is present in this mart.
+
+    The trimmed public build can ship without it, so every tertiary visual
+    degrades to StudyLink-only rather than erroring.
+    """
     return run_query(
         """
         SELECT COUNT(*) AS N FROM information_schema.tables
@@ -365,6 +495,11 @@ def get_tertiary_total(df_db_schema, measure):
 
 @st.cache_data(show_spinner=False)
 def get_tertiary_by_provider(df_db_schema, measure):
+    """Tertiary students by provider type — the denominator of the support share chart.
+
+    MSD_PROVIDER_TYPE is the mart's crosswalk from the Ministry's subsectors to
+    MSD's provider categories, which is what makes the two divisible at all.
+    """
     if not _has_tertiary(df_db_schema):
         return pd.DataFrame(columns=["PERIOD", "PERIOD_SORT", "PROVIDER_TYPE_STD",
                                      "MSD_PROVIDER_TYPE", "VALUE"])
@@ -380,6 +515,12 @@ def get_tertiary_by_provider(df_db_schema, measure):
 
 @st.cache_data(show_spinner=False)
 def get_studylink(df_db_schema):
+    """Raw StudyLink fact at full grain.
+
+    Not wired to a visual: the tab reads the semantic views above, which already
+    resolve the reporting window. Kept as the escape hatch for questions the
+    views do not answer.
+    """
     return run_query(
         """
         SELECT PERIOD, PERIOD_SORT, MEASURE AS PRODUCT, SECTION, LABEL_1, LABEL_2,
@@ -392,6 +533,7 @@ def get_studylink(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_pipeline_gaps(df_db_schema):
+    """Expected against actual releases per series — the coverage heatmap and two of its KPIs."""
     return run_query(
         """
         SELECT SCHEMA_NAME, FAMILY, PERIOD_TYPE, CADENCE_MONTHS, PERIOD, IS_PRESENT,
@@ -402,6 +544,7 @@ def get_pipeline_gaps(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_pipeline_manifest(df_db_schema):
+    """Every downloaded source file with size, date and URL — the Pipeline manifest table."""
     return run_query(
         """
         SELECT DATASET_ID, PERIOD, PERIOD_TYPE, FILE_NAME, FILE_EXT, FILE_SIZE,
@@ -412,6 +555,7 @@ def get_pipeline_manifest(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_pipeline_coverage(df_db_schema):
+    """Staged records per fact table — the Pipeline staging coverage table."""
     return run_query(
         """
         SELECT FACT_NAME, COUNT(*) AS SOURCE_TABLES, SUM(RECORDS) AS STAGED_RECORDS,
@@ -422,11 +566,13 @@ def get_pipeline_coverage(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_fact_catalog(df_db_schema):
+    """Row counts and period span per mart fact — the "Mart fact rows" KPI and the provenance note."""
     return run_query("SELECT * FROM {s}.META_FACT_CATALOG ORDER BY ROWS DESC".format(s=df_db_schema))
 
 
 @st.cache_data(show_spinner=False)
 def get_skipped_sources(df_db_schema):
+    """Raw worksheets deliberately not staged, with the reason — the Pipeline expander."""
     return run_query(
         """
         SELECT SCHEMA_NAME, TABLE_NAME, REASON
@@ -450,6 +596,11 @@ def get_retirement_summary(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_retirement_characteristics(df_db_schema, period, characteristic):
+    """One characteristic split for both pensions — the Retirement stacked bars.
+
+    Split by pension, because New Zealand Superannuation and the Veteran's
+    Pension share row labels on the same worksheet and would otherwise merge.
+    """
     return run_query(
         """
         SELECT PENSION, CHARACTERISTIC_VALUE, SUM(RECIPIENTS) AS RECIPIENTS
@@ -462,6 +613,7 @@ def get_retirement_characteristics(df_db_schema, period, characteristic):
 
 @st.cache_data(show_spinner=False)
 def get_retirement_characteristic_types(df_db_schema, period):
+    """Characteristics published for one quarter — decides which bar charts appear."""
     return run_query(
         """
         SELECT DISTINCT CHARACTERISTIC FROM {s}.VW_RETIREMENT_INCOME
@@ -473,6 +625,7 @@ def get_retirement_characteristic_types(df_db_schema, period):
 
 @st.cache_data(show_spinner=False)
 def get_retirement_ta(df_db_schema, period, pension):
+    """Pension recipients by territorial authority, with H3 cells — the Retirement map."""
     return run_query(
         """
         SELECT GEO_NAME, SUM(RECIPIENTS) AS RECIPIENTS,
@@ -488,6 +641,7 @@ def get_retirement_ta(df_db_schema, period, pension):
 
 @st.cache_data(show_spinner=False)
 def get_retirement_periods(df_db_schema):
+    """Quarters with a territorial authority breakdown — the Retirement map quarter picker."""
     return run_query(
         """
         SELECT DISTINCT PERIOD, PERIOD_SORT FROM {s}.VW_RETIREMENT_INCOME_TA ORDER BY PERIOD_SORT
@@ -496,7 +650,12 @@ def get_retirement_periods(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_expense_line(df_db_schema, lines):
-    """Treasury expenditure for named benefit lines, actual and forecast."""
+    """Treasury expenditure for named benefit lines, actual and forecast.
+
+    BASIS comes back with the rows so a chart can draw outturn and projection in
+    different line styles instead of joining them into one misleading series.
+    MSD publishes no expenditure at all, which is why cost comes from Treasury.
+    """
     ph = ", ".join(["?"] * len(lines))
     return run_query(
         """
@@ -509,6 +668,11 @@ def get_expense_line(df_db_schema, lines):
 
 @st.cache_data(show_spinner=False)
 def get_all_assistance(df_db_schema):
+    """Every assistance programme's spend and recipients — the All assistance tab.
+
+    BASIS separates Treasury outturn from forecast so the area chart can mark
+    where one ends and the other begins.
+    """
     return run_query(
         """
         SELECT PROGRAMME, PERIOD, PERIOD_SORT, BASIS, SPEND_SOURCE,
@@ -551,7 +715,23 @@ def get_people_supported(df_db_schema):
 
 
 # ====================SIDEBAR====================
+# The only global state. Filters chosen here travel to every tab as a plain
+# dict, so no tab reads a widget belonging to another.
 def render_sidebar():
+    """Global controls, rendered once and handed to every tab as a dict.
+
+    Top to bottom:
+      title and provenance caption
+      Period          quarter range slider, defaulting to the last 25 quarters
+                      latest-month selectbox for the monthly series
+      Geography       level selectbox, then an area multiselect for that level
+      Benefit         benefit group multiselect
+      Ethnicity basis caption and the December 2021 split toggle
+      a standing provenance note
+
+    Every picker is built from the series it filters, so no control can offer a
+    period, area or benefit the charts cannot answer.
+    """
     st.sidebar.title("🧭 Social Support Statistics")
     st.sidebar.caption(
         "Derived from publicly available data: Ministry of Social Development "
@@ -619,7 +799,22 @@ def render_sidebar():
 
 
 # ====================TABS====================
+# Layout only. A tab function decides what appears and in what order, and
+# delegates every pixel of it to a render_* method in the next section.
 def render_main_tabs(f):
+    """Eight tabs, left to right, each answering one question.
+
+      Overview           how many people are on a main benefit, and who they are
+      Map                where they are
+      Housing            emergency housing and the social housing register
+      Hardship           supplementary and hardship assistance
+      StudyLink          student support against total tertiary participation
+      Retirement income  NZ Super and the Veteran's Pension, and what they cost
+      All assistance     every programme's spend on one axis
+      Pipeline           where every figure came from
+
+    `f` is the filter dict returned by render_sidebar.
+    """
     t1, t2, t3, t4, t5, t6, t7, t8 = st.tabs(
         ["📊 Overview", "🗺️ Map", "🏠 Housing", "💵 Hardship", "🎓 StudyLink",
          "🧓 Retirement income", "🏛️ All assistance", "⚙️ Pipeline"])
@@ -642,6 +837,19 @@ def render_main_tabs(f):
 
 
 def render_tab_overview(f):
+    """Overview — how many people are on a main benefit.
+
+      four KPI tiles: latest count, quarter on quarter, same quarter a year
+        earlier, quarters shown
+      ---
+      3:2 columns: stacked area by benefit group | monthly headline lines
+      ---
+      three equal columns: age, gender and ethnic group bars for the closing quarter
+      ---
+      snapshot table by area, with an Excel export
+
+    An empty selection short-circuits to a warning rather than an empty chart.
+    """
     st.header("Working-age main benefit recipients")
     if not f["benefit_groups"]:
         st.warning("Select at least one benefit group in the sidebar.")
@@ -668,6 +876,17 @@ def render_tab_overview(f):
 
 
 def render_tab_map(f):
+    """Map — where recipients are.
+
+      caption stating that hexagons mark centroids, not boundaries
+      three equal columns: map level | hexagon resolution | jump-to city
+      extruded H3 hexagon layer, yellow to red by count
+      ---
+      area detail table with an Excel export, H3 columns dropped
+
+    Territorial authority reads the monthly fact, the only series published that
+    deep; every other level reads the quarterly one, so the subtitle names which.
+    """
     st.header("Where recipients are")
     st.caption(
         "Hexagons sit on an indicative centroid for each area. MSD publishes counts by "
@@ -724,6 +943,19 @@ def render_tab_map(f):
 
 
 def render_tab_housing(f):
+    """Housing — emergency housing and the social housing register.
+
+      two columns: grants and households granted (lines) | amount granted (bars)
+      ---
+      Housing Register and Transfer Register applications (lines)
+      ---
+      households by weeks-in-emergency-housing band (heatmap)
+      ---
+      territorial authority detail for one quarter, with an Excel export
+
+    Each block is skipped silently when its series is absent, so a trimmed mart
+    renders fewer blocks rather than failing.
+    """
     st.header("Emergency housing and the social housing register")
 
     eh = get_emergency_housing_trend(df_db_schema)
@@ -745,6 +977,14 @@ def render_tab_housing(f):
 
 
 def render_tab_hardship(f):
+    """Hardship — supplementary support and hardship assistance.
+
+      two columns: point-in-time recipients | assistance granted during the month
+      ---
+      3:2 columns: food grants nationally (bars) | latest month by region (bars)
+      ---
+      assistance paid by Work and Income region (stacked area), then a detail table
+    """
     st.header("Supplementary support and hardship assistance")
 
     hard = get_hardship_trend(df_db_schema)
@@ -761,6 +1001,23 @@ def render_tab_hardship(f):
 
 
 def render_tab_studylink(f):
+    """StudyLink — Student Allowance and Student Loans.
+
+      2:2:3 columns: reporting window | tertiary measure for the right axis | caption
+      combination chart: dollars paid as bars on the left axis, StudyLink
+        recipients and total tertiary participation as lines on the right
+      reach KPIs, then a recipients and a dollars tile per product
+      ---
+      two columns: recipients by provider type, one chart per product
+      share of students at each provider type drawing support
+      ---
+      provider detail table with an Excel export
+
+    The window picker exists because StudyLink republishes its whole history
+    every quarter, each year truncated to the release quarter. Mixing windows
+    splices a three-month year onto full ones, which is what made total support
+    appear to rise while every component fell.
+    """
     st.header("Student Allowance and Student Loans")
 
     windows = get_studylink_windows(df_db_schema).WINDOW_MONTHS.tolist()
@@ -798,6 +1055,23 @@ def render_tab_studylink(f):
 
 
 def render_tab_pipeline(f):
+    """Pipeline — where every figure came from.
+
+      four KPI tiles: files downloaded, mart fact rows, publication coverage,
+        missing releases
+      ---
+      coverage heatmap, series by period: green published, red missing
+      ---
+      staging coverage by fact, with an Excel export
+      expander listing raw worksheets deliberately not staged, and why
+      ---
+      full download manifest with an Excel export
+      ---
+      provenance notes, also offered as copyable markdown
+
+    This tab is the evidence for the banner at the top of the page. Every claim
+    it makes is a query against the pipeline's own metadata, not prose.
+    """
     st.header("Pipeline, coverage and provenance")
 
     cat = get_fact_catalog(df_db_schema)
@@ -854,6 +1128,20 @@ def render_tab_pipeline(f):
 
 
 def render_tab_retirement(f):
+    """Retirement income — New Zealand Superannuation and the Veteran's Pension.
+
+      caption noting recipients are MSD's and the cost is Treasury's
+      recipients (left axis, lines) against NZ Super cost (right axis, solid
+        outturn and dotted forecast), then four KPI tiles
+      ---
+      up to three stacked bar charts of recipient characteristics for a quarter
+      ---
+      hexagon map by territorial authority, with a detail table and export
+
+    The two pensions stay separate on every visual: they share row labels in the
+    source worksheets, and were collapsing into one another before the mart
+    split them by section.
+    """
     st.header("Guaranteed retirement income")
     st.caption(
         "New Zealand Superannuation and the Veteran's Pension: the universal, "
@@ -875,6 +1163,16 @@ def render_tab_retirement(f):
 
 
 def render_tab_all_assistance(f):
+    """All assistance — every programme's spend on one axis.
+
+      caption naming which source supplies spending and which supplies students
+      stacked area of the ten largest programmes, with a dotted rule marking
+        where outturn ends and forecast begins, then four KPI tiles
+      ---
+      people supported by programme (lines), with the standing warning not to add them
+      ---
+      full programme detail table with an Excel export
+    """
     st.header("All government assistance")
     st.caption(
         "Main benefits, retirement income and student support on one axis. "
@@ -897,6 +1195,10 @@ def render_tab_all_assistance(f):
 
 def render_header():
     """Hazard-striped provenance banner shown above every tab.
+
+    Drawn as raw HTML rather than st.warning so the stripes survive both
+    Streamlit themes: a 3px black frame, a 14px yellow-and-black 45-degree
+    stripe band top and bottom, and a solid #FFD100 panel between them.
 
     The application is built from public releases but is not published by, nor
     endorsed by, the agencies that produced them, so that is stated before any
@@ -931,8 +1233,16 @@ def render_header():
 
 
 # ====================VISUALISATION====================
+# One function per chart or table. The docstring is the specification of that
+# visual: the chart type, what sits on each axis, the colour scheme, and the
+# reason for the choice wherever it is not self-evident.
 def render_overview_kpis(trend):
     """Headline counts with quarter-on-quarter and same-quarter year-on-year change.
+
+    Four equal tiles: latest recipients, change on the previous quarter, change
+    on the same quarter a year earlier, and how many quarters are on the charts.
+    Both change tiles use inverse delta colouring, because more people on a
+    benefit is not an improvement.
 
     Year-on-year compares the same quarter twelve months apart: the series is
     strongly seasonal and consecutive quarters are not comparable.
@@ -960,6 +1270,12 @@ def render_overview_kpis(trend):
 
 
 def render_benefit_area_chart(trend):
+    """Stacked area: quarterly recipients by benefit group.
+
+    Benefit colours are fixed in BENEFIT_COLOURS so a group keeps its colour on
+    every tab. Unified hover, legend below the plot, 420px tall to sit level
+    with the line chart beside it.
+    """
     st.markdown("##### Recipients by benefit group")
     fig = px.area(trend.sort_values("PERIOD_SORT"), x="PERIOD", y="CLIENT_COUNT",
                   color="BENEFIT_GROUP", color_discrete_map=BENEFIT_COLOURS,
@@ -971,6 +1287,11 @@ def render_benefit_area_chart(trend):
 
 
 def render_monthly_headline(f):
+    """Monthly lines for the four headline series, beside the area chart.
+
+    Restricted to All main benefits and the three largest so the panel stays
+    readable at half width; the full monthly detail lives in the mart, not here.
+    """
     st.markdown("##### Monthly headline series")
     monthly = get_monthly_trend(df_db_schema, 0, f["m_focus_sort"])
     if monthly.empty:
@@ -989,6 +1310,14 @@ def render_monthly_headline(f):
 
 
 def render_characteristic_charts(f):
+    """Three horizontal bar charts side by side: age, gender, ethnic group.
+
+    Sorted ascending so the longest bar sits at the top, and one colour
+    throughout because the categories are not comparable with each other.
+
+    The ethnicity chart captions its own basis and, on total response, states
+    that the bars do not sum to the total.
+    """
     st.markdown("##### Recipient characteristics, %s" % f["q_to"])
     if not f["geos"] or not f["benefit_groups"]:
         st.info("Select at least one area and benefit group.")
@@ -1023,6 +1352,11 @@ def render_characteristic_charts(f):
 
 
 def render_snapshot_table(f):
+    """Area by benefit group pivot for the closing quarter, with a Total column.
+
+    Uses the standard table header: a 3:1 column split that puts the Excel
+    download button to the right of the heading.
+    """
     snap = get_latest_snapshot(df_db_schema, f["q_to"], f["geo_level"], f["benefit_groups"])
     if snap.empty:
         return
@@ -1045,7 +1379,17 @@ def render_snapshot_table(f):
 
 
 def render_h3_map(df, resolution, jump, subtitle):
-    """H3 hexagon layer coloured red-to-yellow by client count."""
+    """H3 hexagon layer coloured red-to-yellow by client count.
+
+    Shared by the Map and Retirement tabs, so it takes a plain dataframe with a
+    CLIENT_COUNT column and pre-computed H3 cells rather than querying anything
+    itself.
+
+    Colour runs yellow (low) to red (high) across the range currently in view,
+    and hexagons are extruded in proportion, so both channels carry the same
+    number. The basemap is a CartoDB style served over https: pydeck's default
+    mapbox:// style needs a token the Community Cloud deployment does not have.
+    """
     col = "H3_RES_%d" % resolution
     d = df[df[col].notna()].copy()
     if d.empty:
@@ -1089,6 +1433,12 @@ def render_h3_map(df, resolution, jump, subtitle):
 
 
 def render_emergency_housing_charts(eh):
+    """Two equal columns: grant and household counts as lines, dollars as bars.
+
+    Counts and dollars get separate charts rather than a shared secondary axis,
+    because they are different VALUE_KINDs and one axis invites reading one as
+    the other.
+    """
     st.markdown("##### Emergency Housing Special Needs Grants, monthly")
     c1, c2 = st.columns(2)
     with c1:
@@ -1110,6 +1460,7 @@ def render_emergency_housing_charts(eh):
 
 
 def render_register_chart(reg):
+    """Two lines: Housing Register against Transfer Register applications."""
     st.markdown("##### Housing Register and Transfer Register")
     d = reg.copy()
     fig = px.line(d.sort_values("PERIOD_SORT"), x="PERIOD", y="VALUE", color="REGISTER",
@@ -1122,6 +1473,11 @@ def render_register_chart(reg):
 
 
 def render_duration_heatmap(dur):
+    """Duration band by quarter heatmap, pale yellow (few) to red (many households).
+
+    Columns are ordered by PERIOD_SORT rather than alphabetically, because the
+    period labels do not sort as dates.
+    """
     st.markdown("##### Households in emergency housing by duration band")
     p = dur.pivot_table(index="DURATION_BAND", columns="PERIOD", values="HOUSEHOLDS", aggfunc="sum")
     order = sorted(p.columns, key=lambda c: dur[dur.PERIOD == c].PERIOD_SORT.iloc[0])
@@ -1134,6 +1490,12 @@ def render_duration_heatmap(dur):
 
 
 def render_eh_ta_detail(f):
+    """Territorial authority table for one emergency housing quarter.
+
+    The picker starts at 2022Q1, which is when MSD began publishing the TA
+    breakdown. Blank cells are captioned as suppressions so no reader treats
+    them as zero.
+    """
     quarters = sorted(
         get_periods(df_db_schema, "QUARTER").PERIOD.tolist())
     eh_quarters = [q for q in quarters if q >= "2022Q1"]
@@ -1162,6 +1524,11 @@ def render_eh_ta_detail(f):
 
 
 def render_hardship_charts(hard):
+    """Two equal columns of lines: point-in-time recipients | recipients during the month.
+
+    The split matters. Point-in-time counts compare across months; the
+    within-month counts are flows and do not.
+    """
     st.markdown("##### Supplementary support and hardship assistance, monthly")
     c1, c2 = st.columns(2)
     point = hard[hard.SECTION.str.contains("Point-in-time", case=False, na=False)
@@ -1190,6 +1557,10 @@ def render_hardship_charts(hard):
 
 
 def render_food_grant_charts(food):
+    """3:2 columns: national food grants per month (bars) | latest month by region (bars).
+
+    The regional chart keeps the top twelve regions so the labels stay legible.
+    """
     st.markdown("##### Special Needs Grants for food, by regional council")
     counts = food[food.VALUE_KIND == "COUNT"]
     if counts.empty:
@@ -1219,6 +1590,11 @@ def render_food_grant_charts(food):
 
 
 def render_supplementary_detail(f):
+    """Stacked area of assistance paid by Work and Income region, then a detail table.
+
+    Only the AMOUNT rows are charted. The count rows share the fact and would
+    land on the same axis at a completely different scale.
+    """
     d = get_supplementary_region(df_db_schema, f["q_from_sort"], f["q_to_sort"])
     if d.empty:
         st.info("No regional supplementary assistance data in this period range.")
@@ -1251,9 +1627,15 @@ def render_supplementary_detail(f):
 def render_studylink_headline(annual, window, measure):
     """Support paid on the left axis, students on the right.
 
+    Bars are dollars paid per product on the left axis. Solid lines are
+    StudyLink recipients and a dotted navy line is total tertiary participation,
+    both on the right axis. Below the chart sit the reach KPIs, then a
+    recipients tile and a dollars tile for each product.
+
     The right axis carries StudyLink recipients and, when the Education Counts
     extract has been loaded, all tertiary enrolments beside them, so a fall in
-    students receiving support can be read against total participation.
+    students receiving support can be read against total participation. This is
+    the pairing that showed university attendance rising while loan uptake fell.
     """
     st.markdown("##### Support paid and students supported")
 
@@ -1322,7 +1704,13 @@ def render_studylink_headline(annual, window, measure):
 
 
 def render_support_share(annual, enrol, measure):
-    """How much of the tertiary population StudyLink reaches."""
+    """How much of the tertiary population StudyLink reaches.
+
+    Three tiles: all tertiary students in the latest year both sources cover,
+    then each product's recipients as a percentage of them. The share, not the
+    count, is what answers whether fewer students are getting support or there
+    are simply fewer students.
+    """
     tot = enrol.set_index("PERIOD").VALUE
     years = [p for p in annual.PERIOD.unique() if p in tot.index]
     if not years:
@@ -1340,6 +1728,11 @@ def render_support_share(annual, enrol, measure):
 
 
 def render_studylink_provider_chart(window, measure):
+    """Recipients by provider type, one chart per product, then the support share.
+
+    Two equal columns (Student Allowance | Student Loans), then a full-width
+    percentage chart where colour is provider type and dash pattern is product.
+    """
     st.markdown("##### Students supported, by education provider type")
     prov = get_studylink_provider(df_db_schema, window)
     if prov.empty:
@@ -1392,6 +1785,7 @@ def render_studylink_provider_chart(window, measure):
 
 
 def render_studylink_detail(annual, window):
+    """Provider-level StudyLink table for the chosen window, with an Excel export."""
     prov = get_studylink_provider(df_db_schema, window)
     detail = prov.drop(columns=["PERIOD_SORT"]) if not prov.empty else annual
     hdr, dl = st.columns([3, 1])
@@ -1410,6 +1804,12 @@ def render_studylink_detail(annual, window):
 
 
 def render_coverage_matrix(gaps):
+    """Series by period heatmap of publication coverage: green published, red missing.
+
+    Height grows with the number of series so rows never compress into a band.
+    Missing releases are also listed in an expander, because a red cell raises a
+    question and the list answers it.
+    """
     st.markdown("##### Publication coverage by series")
     if gaps.empty:
         st.info("No coverage register available.")
@@ -1434,6 +1834,13 @@ def render_coverage_matrix(gaps):
 
 
 def render_provenance_notes(gaps, man, cat):
+    """The written provenance statement, with every number filled from the mart.
+
+    Nothing in the prose is typed: the counts, coverage and period span are
+    interpolated from the metadata queries above, so the statement cannot drift
+    from the pipeline. Offered again as copyable markdown so it can be pasted
+    into a report.
+    """
     present = int(gaps.IS_PRESENT.sum()) if not gaps.empty else 0
     missing = len(gaps) - present
     notes = """
@@ -1481,7 +1888,13 @@ months, so no infill was built.
 
 
 def render_retirement_headline(summary, spend):
-    """Recipients on the left axis, what they cost on the right."""
+    """Recipients on the left axis, what they cost on the right.
+
+    A solid line per pension, then Treasury's NZ Super cost as a solid line for
+    outturn and a dotted one for forecast — never a single series, so no reader
+    mistakes a projection for a result. Four tiles below: each pension's latest
+    count, the latest actual cost and the furthest forecast.
+    """
     st.markdown("##### Recipients and cost")
     fig = go.Figure()
     colours = {"New Zealand Superannuation": PALETTE[0], "Veteran's Pension": PALETTE[1]}
@@ -1532,6 +1945,12 @@ def render_retirement_headline(summary, spend):
 
 
 def render_retirement_characteristics(f, summary):
+    """Up to three stacked bar charts of recipient characteristics for a chosen quarter.
+
+    Which characteristics appear is read from the data rather than hard-coded,
+    because MSD's published breakdowns change between releases. Bars stack by
+    pension in the same colours as the headline chart above.
+    """
     st.markdown("##### Recipient characteristics")
     periods = sorted(summary.PERIOD.unique())
     period = st.selectbox("Quarter", options=periods[::-1], index=0, key="ret_char_period")
@@ -1563,6 +1982,12 @@ def render_retirement_characteristics(f, summary):
 
 
 def render_retirement_map(f):
+    """Hexagon map of pension recipients by territorial authority.
+
+    Three controls: quarter, pension and hexagon resolution. Pension is a
+    control rather than a colour because the two are on wildly different
+    scales — the Veteran's Pension would be invisible beside NZ Super.
+    """
     st.markdown("##### Where recipients live")
     periods = get_retirement_periods(df_db_schema).PERIOD.tolist()
     if not periods:
@@ -1602,7 +2027,13 @@ def render_retirement_map(f):
 
 
 def render_assistance_spend(assistance):
-    """Total assistance spending by programme, outturn then projection."""
+    """Total assistance spending by programme, outturn then projection.
+
+    Stacked area of the ten largest programmes, with a dotted vertical rule and
+    an "outturn to forecast" annotation at the last actual year. Four tiles
+    below: total for that year, largest programme, the furthest benefit forecast
+    and how many programmes are counted.
+    """
     st.markdown("##### What government assistance costs")
 
     top = (assistance.groupby("PROGRAMME")["AMOUNT_NZD_MILLION"].max()
@@ -1652,6 +2083,12 @@ def render_assistance_spend(assistance):
 
 
 def render_assistance_people():
+    """People supported by programme, one line each, deliberately never stacked.
+
+    The caption is part of the visual rather than decoration: these populations
+    overlap — one person can hold a student loan and a main benefit — so an area
+    chart or a total would be wrong.
+    """
     st.markdown("##### People supported")
     people = get_people_supported(df_db_schema)
     if people.empty:
@@ -1673,6 +2110,7 @@ def render_assistance_people():
 
 
 def render_assistance_detail(assistance):
+    """Full programme-level spend table, with an Excel export and a sourcing caption."""
     hdr, dl = st.columns([3, 1])
     with hdr:
         st.markdown("#### 📋 Assistance spending by programme")
@@ -1693,13 +2131,21 @@ def render_assistance_detail(assistance):
 
 
 # ====================STATIC_METHODS====================
+# Shared helpers that draw nothing on their own.
 def _safe_filename(text):
+    """Trim any label into something safe to use as a download filename."""
     cleaned = "".join(c for c in str(text) if c.isalnum() or c in " _-").strip().replace(" ", "_")
     return cleaned[:40] or "results"
 
 
 def build_styled_excel(df, title, sheet_name="Results"):
-    """Generic styled in-memory Excel export for any dataframe."""
+    """Generic styled in-memory Excel export for any dataframe.
+
+    Every table on every tab downloads through this one function, so exports
+    look the same wherever they came from: navy title bar, blue header row,
+    banded rows, dates and numbers typed rather than stringified, frozen panes
+    and an autofilter on the header.
+    """
     cols = list(df.columns)
     ncols = max(len(cols), 1)
     wrap_cols = {"SOURCE_URL", "SECTION", "REASON", "MEASURE_GROUP"}
@@ -1778,6 +2224,11 @@ def build_styled_excel(df, title, sheet_name="Results"):
 
 # ====================MAIN====================
 def main():
+    """Page assembly: banner, then sidebar controls, then tabs.
+
+    Deliberately thin. Every decision about what is drawn lives in the render_*
+    functions above, so this reads as the page's table of contents.
+    """
     if not os.path.exists(DB_PATH):
         st.error("Data file not found at %s." % DB_PATH)
         return
