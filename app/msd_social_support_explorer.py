@@ -22,7 +22,7 @@ The page
 --------
   hazard-striped provenance banner                        render_header
   sidebar: period, geography, benefit, ethnicity basis     render_sidebar
-  eight tabs                                              render_main_tabs
+  nine tabs                                               render_main_tabs
     Overview            how many people are on a main benefit, and who
     Map                 where they are
     Housing             emergency housing and the social housing register
@@ -31,6 +31,7 @@ The page
     Retirement income   NZ Super and the Veteran's Pension, and their cost
     All assistance      every programme's spend on one axis
     Pipeline            where every figure came from
+    Method              how the platform was built, from its own write-up
 
 Rules every visual on this page obeys
 -------------------------------------
@@ -79,6 +80,18 @@ DB_PATH = os.environ.get(
                  "data", "msd_platform_public.duckdb"),
 )
 df_db_schema = "MSD_MART"
+
+# Markdown carried as files rather than strings. The Phase Two write-up is
+# documentation of the build, edited on its own; embedding a copy in this module
+# would give it a second version free to drift from the first. Folders are
+# searched in order and the first hit wins: an explicit override, the public
+# repository's reference folder, then the platform root the working copy sits in.
+REFERENCE_DIRS = [
+    os.environ.get("MSD_REFERENCE_DIR", ""),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "reference"),
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+]
+PHASE_TWO_DOC = "README_PHASE_TWO.md"
 
 # PALETTE is the ordered sequence for categories with no fixed identity, so any
 # chart drawing an arbitrary set of series looks like every other one.
@@ -713,6 +726,23 @@ def get_people_supported(df_db_schema):
         ORDER BY 1
         """.format(s=df_db_schema))
 
+@st.cache_data(show_spinner=False)
+def get_reference_doc(file_name):
+    """Load a markdown reference document from disk, verbatim — the Method tab.
+
+    Returns the text, or None when no copy is on the search path, so a
+    deployment shipped without the reference folder renders a short notice
+    rather than failing.
+    """
+    for folder in REFERENCE_DIRS:
+        if not folder:
+            continue
+        path = os.path.join(folder, file_name)
+        if os.path.exists(path):
+            with io.open(path, encoding="utf-8") as fh:
+                return fh.read()
+    return None
+
 
 # ====================SIDEBAR====================
 # The only global state. Filters chosen here travel to every tab as a plain
@@ -799,10 +829,8 @@ def render_sidebar():
 
 
 # ====================TABS====================
-# Layout only. A tab function decides what appears and in what order, and
-# delegates every pixel of it to a render_* method in the next section.
 def render_main_tabs(f):
-    """Eight tabs, left to right, each answering one question.
+    """Nine tabs, left to right, each answering one question.
 
       Overview           how many people are on a main benefit, and who they are
       Map                where they are
@@ -812,12 +840,13 @@ def render_main_tabs(f):
       Retirement income  NZ Super and the Veteran's Pension, and what they cost
       All assistance     every programme's spend on one axis
       Pipeline           where every figure came from
+      Method             how the platform was built, from its own write-up
 
     `f` is the filter dict returned by render_sidebar.
     """
-    t1, t2, t3, t4, t5, t6, t7, t8 = st.tabs(
+    t1, t2, t3, t4, t5, t6, t7, t8, t9 = st.tabs(
         ["📊 Overview", "🗺️ Map", "🏠 Housing", "💵 Hardship", "🎓 StudyLink",
-         "🧓 Retirement income", "🏛️ All assistance", "⚙️ Pipeline"])
+         "🧓 Retirement income", "🏛️ All assistance", "⚙️ Pipeline", "📐 Method"])
     with t1:
         render_tab_overview(f)
     with t2:
@@ -834,6 +863,8 @@ def render_main_tabs(f):
         render_tab_all_assistance(f)
     with t8:
         render_tab_pipeline(f)
+    with t9:
+        render_tab_method(f)
 
 
 def render_tab_overview(f):
@@ -1191,6 +1222,44 @@ def render_tab_all_assistance(f):
     render_assistance_people()
     st.markdown("---")
     render_assistance_detail(assistance)
+
+def render_tab_method(f):
+    """Method — the Phase Two build write-up, rendered from its own markdown file.
+
+      caption naming the document and stating it is loaded, not embedded
+      3:1 header row: heading | download the original markdown
+      the document, verbatim
+
+    The text is read at run time rather than held in this module, so the tab
+    always shows the current write-up and there is never a second copy of it to
+    fall out of date. Nothing here interprets the document: it is displayed as
+    the markdown it already is.
+    """
+    st.header("How this was built")
+    st.caption(
+        "The Phase Two write-up, loaded from %s and rendered unchanged. It records "
+        "how the staging layer, the mart and this application were designed "
+        "backwards from the question each tab has to answer." % PHASE_TWO_DOC
+    )
+
+    doc = get_reference_doc(PHASE_TWO_DOC)
+    if doc is None:
+        st.info(
+            "%s is not on the reference path for this deployment. Point "
+            "MSD_REFERENCE_DIR at the folder holding it." % PHASE_TWO_DOC
+        )
+        return
+
+    hdr, dl = st.columns([3, 1])
+    with hdr:
+        st.markdown("#### 📄 %s" % PHASE_TWO_DOC)
+    with dl:
+        st.download_button(
+            "📥 Markdown", data=doc.encode("utf-8"), file_name=PHASE_TWO_DOC,
+            mime="text/markdown", key="dl_phase_two_md", type="primary")
+
+    st.markdown("---")
+    st.markdown(doc)
 
 
 def render_header():
