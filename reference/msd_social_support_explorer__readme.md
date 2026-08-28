@@ -1,8 +1,8 @@
-# ====================MSD_DATA_PLATFORM_PHASE_TWO====================
+# ====================MSD_SOCIAL_SUPPORT_EXPLORER_BUILD_NOTES====================
 
-# Phase Two — Staging Layer, Mart and Streamlit Application
+# Build notes — Staging Layer, Mart and Streamlit Application
 
-**Status:** Complete. All Phase One and Phase Two validation checks pass.
+**Status:** Complete. Every RAW and mart validation check passes.
 **Built:** 22 August 2026
 **Mart:** `db/msd_platform.duckdb` (73 MB)
 **App:** [app/msd_social_support_explorer.py](app/msd_social_support_explorer.py)
@@ -214,7 +214,7 @@ method, so porting to Snowflake means changing that single function.
 # ====================DECISIONS_AND_DEPARTURES====================
 
 **No synthetic data was built.** The brief's S1–S7 synthetic specification belongs
-to a later phase and was not part of this request. More importantly, S7
+to later work and was not part of this request. More importantly, S7
 (missing-month infill) is not needed: the publication gap it was designed to fill
 no longer exists. The sidebar's "Include synthetic data" toggle was replaced with
 an ethnicity-basis control, which is the real analytical hazard in this data.
@@ -238,7 +238,7 @@ python scripts/run_all.py
 
 | Script | Purpose |
 |---|---|
-| `01`–`06` | Phase One: discover, download, RAW layer, validate |
+| `01`–`06` | Discover, download, RAW layer, validate |
 | `07_build_staging.py` | Resolve RAW cell grids into 4.06M tidy records |
 | `08_build_mart.py` | Dimensions, 21 facts, `VW_BENEFIT_TOTALS`, metadata |
 | `09_validate_mart.py` | Reconcile against published figures; non-zero exit on failure |
@@ -250,7 +250,7 @@ Rebuilding staging takes about four minutes; the mart about one.
 
 ---
 
-# ====================PHASE_TWO_ADDENDUM_TERTIARY_PARTICIPATION====================
+# ====================ADDENDUM_TERTIARY_PARTICIPATION====================
 
 Added 22 August 2026, after the StudyLink tab appeared to show tertiary attendance
 collapsing. It did not. Three bugs and one missing data source were between the

@@ -31,7 +31,7 @@ The page
     Retirement income   NZ Super and the Veteran's Pension, and their cost
     All assistance      every programme's spend on one axis
     Pipeline            where every figure came from
-    Method              how the platform was built, from its own write-up
+    Build Notes         how the platform was built, from its own write-up
 
 Rules every visual on this page obeys
 -------------------------------------
@@ -81,9 +81,9 @@ DB_PATH = os.environ.get(
 )
 df_db_schema = "MSD_MART"
 
-# Markdown carried as files rather than strings. The Phase Two write-up is
-# documentation of the build, edited on its own; embedding a copy in this module
-# would give it a second version free to drift from the first. Folders are
+# Markdown carried as files rather than strings. The build write-up is
+# documentation of this application, edited on its own; embedding a copy in this
+# module would give it a second version free to drift from the first. Folders are
 # searched in order and the first hit wins: an explicit override, the public
 # repository's reference folder, then the platform root the working copy sits in.
 REFERENCE_DIRS = [
@@ -91,7 +91,10 @@ REFERENCE_DIRS = [
     os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "reference"),
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 ]
-PHASE_TWO_DOC = "README_PHASE_TWO.md"
+
+# A write-up is named for the module it documents: <module>__readme.md. Derived
+# rather than typed, so renaming this file renames the document it looks for.
+BUILD_NOTES_DOC = os.path.splitext(os.path.basename(__file__))[0] + "__readme.md"
 
 # PALETTE is the ordered sequence for categories with no fixed identity, so any
 # chart drawing an arbitrary set of series looks like every other one.
@@ -728,7 +731,7 @@ def get_people_supported(df_db_schema):
 
 @st.cache_data(show_spinner=False)
 def get_reference_doc(file_name):
-    """Load a markdown reference document from disk, verbatim — the Method tab.
+    """Load a markdown reference document from disk, verbatim — the Build Notes tab.
 
     Returns the text, or None when no copy is on the search path, so a
     deployment shipped without the reference folder renders a short notice
@@ -840,13 +843,13 @@ def render_main_tabs(f):
       Retirement income  NZ Super and the Veteran's Pension, and what they cost
       All assistance     every programme's spend on one axis
       Pipeline           where every figure came from
-      Method             how the platform was built, from its own write-up
+      Build Notes        how the platform was built, from its own write-up
 
     `f` is the filter dict returned by render_sidebar.
     """
     t1, t2, t3, t4, t5, t6, t7, t8, t9 = st.tabs(
         ["📊 Overview", "🗺️ Map", "🏠 Housing", "💵 Hardship", "🎓 StudyLink",
-         "🧓 Retirement income", "🏛️ All assistance", "⚙️ Pipeline", "📐 Method"])
+         "🧓 Retirement income", "🏛️ All assistance", "⚙️ Pipeline", "📐 Build Notes"])
     with t1:
         render_tab_overview(f)
     with t2:
@@ -864,7 +867,7 @@ def render_main_tabs(f):
     with t8:
         render_tab_pipeline(f)
     with t9:
-        render_tab_method(f)
+        render_tab_build_notes(f)
 
 
 def render_tab_overview(f):
@@ -1223,8 +1226,8 @@ def render_tab_all_assistance(f):
     st.markdown("---")
     render_assistance_detail(assistance)
 
-def render_tab_method(f):
-    """Method — the Phase Two build write-up, rendered from its own markdown file.
+def render_tab_build_notes(f):
+    """Build Notes — the build write-up, rendered from its own markdown file.
 
       caption naming the document and stating it is loaded, not embedded
       3:1 header row: heading | download the original markdown
@@ -1237,26 +1240,26 @@ def render_tab_method(f):
     """
     st.header("How this was built")
     st.caption(
-        "The Phase Two write-up, loaded from %s and rendered unchanged. It records "
-        "how the staging layer, the mart and this application were designed "
-        "backwards from the question each tab has to answer." % PHASE_TWO_DOC
+        "The build write-up, loaded from %s and rendered unchanged. It records how "
+        "the staging layer, the mart and this application were designed backwards "
+        "from the question each tab has to answer." % BUILD_NOTES_DOC
     )
 
-    doc = get_reference_doc(PHASE_TWO_DOC)
+    doc = get_reference_doc(BUILD_NOTES_DOC)
     if doc is None:
         st.info(
             "%s is not on the reference path for this deployment. Point "
-            "MSD_REFERENCE_DIR at the folder holding it." % PHASE_TWO_DOC
+            "MSD_REFERENCE_DIR at the folder holding it." % BUILD_NOTES_DOC
         )
         return
 
     hdr, dl = st.columns([3, 1])
     with hdr:
-        st.markdown("#### 📄 %s" % PHASE_TWO_DOC)
+        st.markdown("#### 📄 %s" % BUILD_NOTES_DOC)
     with dl:
         st.download_button(
-            "📥 Markdown", data=doc.encode("utf-8"), file_name=PHASE_TWO_DOC,
-            mime="text/markdown", key="dl_phase_two_md", type="primary")
+            "📥 Markdown", data=doc.encode("utf-8"), file_name=BUILD_NOTES_DOC,
+            mime="text/markdown", key="dl_build_notes_md", type="primary")
 
     st.markdown("---")
     st.markdown(doc)
