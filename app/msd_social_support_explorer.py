@@ -32,6 +32,7 @@ The page
     All assistance      every programme's spend on one axis
     Pipeline            where every figure came from
     Build Notes         how the platform was built, from its own write-up
+  sources and licence expander                            render_attribution
 
 Rules every visual on this page obeys
 -------------------------------------
@@ -1304,6 +1305,27 @@ def render_header():
     )
 
 
+def render_attribution():
+    """Collapsed source-and-licence note closing every page.
+
+    The hazard banner above says who published the figures and that this is not
+    an official product. This says the other half: under what terms the data is
+    reused, that it has been modified to get here, and where the full per-dataset
+    record lives. Collapsed, because it belongs after the reading rather than
+    before it.
+    """
+    with st.expander("Data sources & attribution"):
+        st.markdown(
+            "Built on open data from the **Ministry of Social Development**, the "
+            "**Ministry of Education** and **the Treasury** — modified: reshaped "
+            "out of their worksheet layouts into a conformed mart. No licence is "
+            "recorded for any source in this platform's records, so every dataset "
+            "is flagged **unverified** rather than asserted as CC BY 4.0. "
+            "Demonstration of method, not published statistics. Full provenance: "
+            "[ATTRIBUTION.md](https://github.com/celnicconsulting/msd-social-support-explorer/blob/main/ATTRIBUTION.md)."
+        )
+
+
 # ====================VISUALISATION====================
 # One function per chart or table. The docstring is the specification of that
 # visual: the chart type, what sits on each axis, the colour scheme, and the
@@ -2296,7 +2318,7 @@ def build_styled_excel(df, title, sheet_name="Results"):
 
 # ====================MAIN====================
 def main():
-    """Page assembly: banner, then sidebar controls, then tabs.
+    """Page assembly: banner, then sidebar controls, then tabs, then attribution.
 
     Deliberately thin. Every decision about what is drawn lives in the render_*
     functions above, so this reads as the page's table of contents.
@@ -2307,6 +2329,7 @@ def main():
     render_header()
     filters = render_sidebar()
     render_main_tabs(filters)
+    render_attribution()
 
 
 if __name__ == "__main__":

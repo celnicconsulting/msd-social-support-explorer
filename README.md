@@ -3,6 +3,16 @@
 **A working demonstration of flipping the data team — building backwards from the
 decision, not forwards from the source system.**
 
+> **Data & licence.** Built on open data from the Ministry of Social Development,
+> the Ministry of Education and the Treasury — see
+> [ATTRIBUTION.md](ATTRIBUTION.md) and [DATA_SOURCES.yaml](DATA_SOURCES.yaml)
+> for every source, licence and modification. No licence is recorded for any
+> source in this repository's own records, so every dataset is flagged
+> **unverified** rather than asserted as CC BY 4.0. Demonstration of method only:
+> the data is modified — reshaped out of the publishers' worksheet layouts into a
+> conformed mart — and must not be relied on for operational, policy or reporting
+> purposes.
+
 Built by [Celnic Consulting](https://www.linkedin.com/company/celnic-consulting).
 Live app: **https://celnic-msd.streamlit.app**
 
@@ -131,6 +141,14 @@ official purpose consult the agencies directly:
 
 ## Licence
 
-Application code is MIT licensed — see [LICENSE](LICENSE). The underlying data
-remains the property of the publishing agencies and is used under their published
-terms.
+Two licences apply, to two different things:
+
+- **Code** — MIT, see [LICENSE](LICENSE). It covers the application and the
+  pipeline in this repository, and nothing else.
+- **Data** — see [LICENSE-DATA](LICENSE-DATA). The underlying data remains the
+  property of the publishing agencies and is used under their own terms.
+  [DATA_SOURCES.yaml](DATA_SOURCES.yaml) records the source, licence status,
+  retrieval date and modifications for every dataset;
+  [ATTRIBUTION.md](ATTRIBUTION.md) is the human-readable version of the same
+  record. No licence is recorded for any source, so all of them are currently
+  flagged as unverified.

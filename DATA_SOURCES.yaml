@@ -1,0 +1,527 @@
+# DATA_SOURCES.yaml - provenance and licence manifest
+generated_by: show-me-org attribution pass, 2026-08-30
+repository: https://github.com/celnicconsulting/msd-social-support-explorer
+note: >
+  This repository publishes derived artefacts only (the extracts the app
+  reads). The raw downloads and staging tables named under upstream_files live
+  in the private working tree and are not redistributed here. The single
+  published data file, data/msd_platform_public.duckdb, is a trimmed extract of
+  the conformed mart; it also carries META_DOWNLOAD_MANIFEST, which records the
+  URL, size, checksum and download date of every upstream file listed below.
+licence_status: >
+  IMPORTANT - the repository's own records (scripts/msd_registry.py, the
+  download and ingest scripts, the build notes and the README) name every source
+  but state no licence for any of them. No licence was verified from the
+  publishers' pages during this pass, because this pass was run offline. Every
+  sourced dataset below therefore carries licence "UNVERIFIED" and
+  licence_issue true. The expectation is CC BY 4.0 under NZGOAL, and the MSD,
+  Education Counts and Treasury pages are the places to confirm it, but that
+  confirmation has not been made and must not be assumed. Nothing has been
+  deleted; this is a flag, not a removal.
+datasets:
+
+  # ---------- Ministry of Social Development ----------
+  - id: msd_benefit_fact_sheets
+    title: "Quarterly Benefit Fact Sheets"
+    publisher: "Ministry of Social Development"
+    source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/benefit/index.html"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: >
+      No licence recorded anywhere in this repository or its build scripts.
+      Expected CC BY 4.0 under NZGOAL; confirm on the MSD statistics pages
+      before relying on redistribution.
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "downloaded, staged as cell grids, resolved into conformed facts, trimmed to 2019 onward for publication"
+    upstream_file_count: 615
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/msd/D1_BENEFIT_FACT_SHEETS/**
+      - stage/MSD__BENEFIT_QUARTERLY_FACT_SHEETS/**
+      - stage_tidy/MSD__BENEFIT_QUARTERLY_FACT_SHEETS__*
+
+  - id: msd_monthly_benefits_update
+    title: "Monthly Benefits Update"
+    publisher: "Ministry of Social Development"
+    source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/monthly-reporting/"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "downloaded, staged as cell grids, resolved into conformed monthly facts"
+    upstream_file_count: 76
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/msd/D2_MONTHLY_BENEFITS_UPDATE/**
+      - stage/MSD__BENEFIT_MONTHLY_BENEFITS_UPDATE/**
+
+  - id: msd_monthly_housing_update
+    title: "Monthly Housing Update, and the Housing and Transfer Registers"
+    publisher: "Ministry of Social Development"
+    source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/housing/monthly-housing-reporting.html"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "downloaded, staged as cell grids, resolved into emergency-housing and register facts"
+    upstream_file_count: 193
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/msd/D3_MONTHLY_HOUSING_UPDATE/**
+      - stage/MSD__HOUSING_MONTHLY_UPDATE/**
+
+  - id: msd_emergency_housing_ta
+    title: "Emergency Housing Special Needs Grants by territorial authority"
+    publisher: "Ministry of Social Development"
+    source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/housing/emergency-housing.html"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "downloaded, staged as entity-matrix grids, resolved into FACT_EMERGENCY_HOUSING_TA"
+    upstream_file_count: 18
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/msd/D4_EMERGENCY_HOUSING_TA/**
+      - stage/MSD__HOUSING_EMERGENCY_HOUSING_TA/**
+
+  - id: msd_studylink
+    title: "StudyLink quarterly statistics (Student Allowance and Student Loan)"
+    publisher: "Ministry of Social Development (StudyLink)"
+    source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/studylink/index.html"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: >
+      downloaded, staged, resolved into FACT_STUDYLINK; year-to-date release
+      windows de-spliced so full years are never grafted onto partial ones, and
+      dollar rows separated from headcount rows that share the same labels
+    upstream_file_count: 134
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/msd/D5_STUDYLINK/**
+      - stage/MSD__STUDYLINK_QUARTERLY_STATISTICS/**
+
+  - id: msd_weekly_reporting
+    title: "Weekly income support update"
+    publisher: "Ministry of Social Development"
+    source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/weekly-reporting/index.html"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: >
+      downloaded and staged; not promoted to any published fact. It reaches this
+      repository only as rows in META_DOWNLOAD_MANIFEST inside the DuckDB extract.
+    upstream_file_count: 223
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/msd/D9_WEEKLY_REPORTING/**
+      - stage/MSD__BENEFIT_WEEKLY_INCOME_SUPPORT_UPDATE/**
+
+  - id: msd_covid_wage_subsidy
+    title: "COVID-19 wage subsidy statistics"
+    publisher: "Ministry of Social Development"
+    source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/covid-19/who-received-the-covid-19-wage-subsidies-may-2022.html"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: >
+      No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL;
+      unconfirmed. The COVID-19 statistics index page returned 404 during
+      discovery, so no canonical landing page was captured - the URL above is one
+      of the release pages the files were actually found on.
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: >
+      downloaded and staged; not promoted to any published fact. It reaches this
+      repository only as rows in META_DOWNLOAD_MANIFEST inside the DuckDB extract.
+    upstream_file_count: 4
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/msd/D10_COVID_STATISTICS/**
+      - stage/MSD__COVID_19_WAGE_SUBSIDY/**
+
+  - id: msd_benefit_forecasts
+    title: "Summary of benefit forecasts (BEFU, HYEFU and PREFU vintages, 2020-2025)"
+    publisher: "Ministry of Social Development"
+    source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/befu/budget-economic-and-fiscal-update-2025.html"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "downloaded, staged, resolved into FACT_BENEFIT_FORECAST with actual and forecast rows kept apart"
+    upstream_file_count: 10
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/msd/D99_OTHER/**
+      - stage/MSD__FORECASTS_AND_OTHER_TABLES/**
+
+  - id: msd_cyf_child_protection
+    title: "Child, Youth and Family national and local level data (June 2017)"
+    publisher: "Ministry of Social Development"
+    source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/cyf/findings.html"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: >
+      No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL;
+      unconfirmed. This is a legacy series - the function moved to Oranga Tamariki
+      in 2017 - so the publishing agency for any current equivalent differs.
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: >
+      downloaded and staged; not promoted to any published fact. It reaches this
+      repository only as rows in META_DOWNLOAD_MANIFEST inside the DuckDB extract.
+    upstream_file_count: 5
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/msd/D99_OTHER/**
+
+  # ---------- Ministry of Education (Education Counts) ----------
+  # All twelve workbook sets come from the same Education Counts tertiary
+  # participation collection. Education Counts refuses scripted requests, so the
+  # workbooks were supplied manually rather than crawled; no per-file URL was
+  # captured, only the collection landing page.
+  - id: moe_provider_based_enrolments
+    title: "Provider-based enrolments (ENR.10), tertiary participation"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually, staged as cell grids, resolved into FACT_TERTIARY_ENROLMENT"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/moe/provider-based-enrolments-2025.xlsx
+      - stage/MOE__TERTIARY_PROVIDER_BASED_ENROLMENTS/**
+
+  - id: moe_provider_based_efts
+    title: "Provider-based equivalent full-time students (EFT.9), tertiary participation"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually, staged as cell grids, resolved into FACT_TERTIARY_ENROLMENT"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/moe/Provider-based-equivalent-full-time-students-2025-v2.xlsx
+      - stage/MOE__TERTIARY_PROVIDER_BASED_EFTS/**
+
+  - id: moe_field_of_study
+    title: "Provider-based enrolments and EFTS by field of study"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 3
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_FIELD_OF_STUDY/**
+
+  - id: moe_graduate_progression
+    title: "Graduate progression rates"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 5
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_GRADUATE_PROGRESSION/**
+
+  - id: moe_participation_rates
+    title: "Tertiary participation rates, 2003-2025"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_PARTICIPATION_RATES/**
+
+  - id: moe_participation_rates_age_standardised
+    title: "Age-standardised tertiary participation rates, 2003-2025"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_PARTICIPATION_RATES_AGE_STD/**
+
+  - id: moe_workplace_based_learning
+    title: "Participation in workplace-based learning"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_WORKPLACE_BASED_LEARNING/**
+
+  - id: moe_targeted_training
+    title: "Targeted training programmes"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_TARGETED_TRAINING/**
+
+  - id: moe_secondary_tertiary_star
+    title: "Secondary-Tertiary Alignment Resource (STAR)"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_SECONDARY_TERTIARY_STAR/**
+
+  - id: moe_adult_community_education
+    title: "Adult and Community Education"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_ADULT_COMMUNITY_EDUCATION/**
+
+  - id: moe_te_reo_maori_courses
+    title: "Te reo Maori language course enrolments, 2016-2025"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_TE_REO_MAORI_COURSES/**
+
+  - id: moe_language_courses
+    title: "Language course enrolments, 2016-2025"
+    publisher: "Ministry of Education (Education Counts)"
+    source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "supplied manually and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - stage/MOE__TERTIARY_LANGUAGE_COURSES/**
+
+  # ---------- The Treasury ----------
+  - id: tsy_fiscal_update_expense_tables
+    title: "Budget Economic and Fiscal Update 2025 - core Crown expense tables"
+    publisher: "The Treasury"
+    source_url: "https://www.treasury.govt.nz/sites/default/files/2025-05/befu25-data-expense-tables.xlsx"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: >
+      No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL;
+      unconfirmed. Only the data file URL was captured - the Treasury's HTML
+      pages refuse scripted requests, so the publication page carrying the
+      licence statement was never read.
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: >
+      downloaded, staged as cell grids, resolved into FACT_GOVT_EXPENSE with
+      dollar tables and beneficiary headcount blocks separated per section
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/treasury/befu25-data-expense-tables.xlsx
+      - stage/TSY__FISCAL_UPDATE_EXPENSE_TABLES/**
+
+  - id: tsy_fiscal_update_charts_data
+    title: "Budget Economic and Fiscal Update 2025 - chart data"
+    publisher: "The Treasury"
+    source_url: "https://www.treasury.govt.nz/sites/default/files/2025-05/befu25-charts-data.xlsx"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "downloaded and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/treasury/befu25-charts-data.xlsx
+      - stage/TSY__FISCAL_UPDATE_CHARTS_DATA/**
+
+  - id: tsy_financial_statements_of_government
+    title: "Financial Statements of the Government of New Zealand 2025"
+    publisher: "The Treasury"
+    source_url: "https://www.treasury.govt.nz/sites/default/files/2025-10/fsgnz-2025.xlsx"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "downloaded and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/treasury/fsgnz-2025.xlsx
+      - stage/TSY__FINANCIAL_STATEMENTS_OF_GOVERNMENT/**
+
+  - id: tsy_financial_statements_charts_data
+    title: "Financial Statements of the Government of New Zealand 2025 - chart data"
+    publisher: "The Treasury"
+    source_url: "https://www.treasury.govt.nz/sites/default/files/2025-10/fsgnz-2025-charts-data.xlsx"
+    licence: "UNVERIFIED"
+    licence_url: "unknown"
+    licence_issue: true
+    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    retrieved: "2026-08-22"
+    modified: true
+    modifications: "downloaded and staged; not promoted to a published fact"
+    upstream_file_count: 1
+    files:
+      - data/msd_platform_public.duckdb
+    upstream_files:
+      - raw/treasury/fsgnz-2025-charts-data.xlsx
+      - stage/TSY__FINANCIAL_STATEMENTS_CHARTS_DATA/**
+
+  # ---------- Generated reference data (not sourced) ----------
+  - id: reference_geography_centroids
+    title: "Indicative geography centroids and H3 cells"
+    publisher: "Celnic Consulting (generated)"
+    source_url: "n/a"
+    licence: "CC0 / demonstration only"
+    modified: false
+    note: >
+      DIM_GEOGRAPHY carries a matching key and an indicative centroid for each
+      region, territorial authority, Auckland local board and Work and Income
+      region, authored in scripts/msd_geography.py because no agency publishes
+      coordinates alongside these statistics. The centroids are indicative points
+      for the populated centre of an area, not official boundary centroids. They
+      position a map marker and never change a count.
+    files:
+      - data/msd_platform_public.duckdb
+
+# No synthetic records exist in this platform. The work packet's synthetic
+# specification was deliberately not built: every value in every fact traces to a
+# published file recorded in META_DOWNLOAD_MANIFEST. The only non-agency values
+# anywhere are the indicative map centroids above.
+
+repository_files:
+  - path: data/msd_platform_public.duckdb
+    class: DERIVED
+    note: >
+      Trimmed extract of the conformed mart built by scripts/13_build_public_mart.py.
+      43 objects - 4 dimensions, 24 facts, 8 semantic views and 7 META provenance
+      tables. Derived from every sourced dataset above, plus the generated
+      geography reference.
+  - path: reference/msd_social_support_explorer__readme.md
+    class: DERIVED
+    note: "Build write-up rendered by the app's Build Notes tab. Documentation, not data."

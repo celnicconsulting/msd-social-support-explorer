@@ -1,0 +1,54 @@
+DATA LICENCE NOTICE
+===================
+
+The MIT licence in LICENSE covers the CODE in this repository only — the
+Streamlit application under app/ and anything else executable. It confers no
+rights whatsoever over the data.
+
+Source data
+-----------
+
+The data published here originates with New Zealand government agencies and
+remains under its publishers' licences, not under MIT. The publishers are:
+
+  - the Ministry of Social Development (including StudyLink)
+  - the Ministry of Education (Education Counts)
+  - the Treasury
+
+DATA_SOURCES.yaml is the authoritative record. For every dataset it states the
+publisher, the source URL, the licence status, the date the files were retrieved
+and exactly how the data was modified. ATTRIBUTION.md carries the same record in
+readable form, grouped by publisher.
+
+Licence status: unverified
+--------------------------
+
+No licence is recorded for any source dataset anywhere in this repository or in
+the pipeline that produced it. New Zealand government statistical releases are
+normally licensed CC BY 4.0 under NZGOAL, and that is the expectation for all
+three publishers — but it is an expectation, not a verified fact, and it must
+not be treated as one. Every dataset in DATA_SOURCES.yaml is flagged
+licence_issue: true for this reason.
+
+Anyone intending to redistribute this data, or to rely on it beyond reading this
+demonstration, should confirm the licence on each publisher's own page first.
+
+Modification
+------------
+
+The data has been modified. It was downloaded, staged as faithful cell grids,
+resolved out of the publishers' worksheet layouts into a conformed mart, and
+trimmed to the period range the application charts. Figures are reconciled
+against the agencies' published totals, but this is not an official publication
+of any agency and no agency has endorsed it. For any official purpose, consult
+the agencies directly.
+
+Generated data
+--------------
+
+The indicative geography centroids and H3 cells in DIM_GEOGRAPHY are not agency
+data. They were authored for this repository because no agency publishes
+coordinates alongside these statistics. They are demonstration-only reference
+values, offered as CC0: they position a map marker and never change a count.
+
+No synthetic or modelled statistical values exist anywhere in this platform.
