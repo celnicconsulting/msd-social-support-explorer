@@ -6,9 +6,11 @@ decision, not forwards from the source system.**
 > **Data & licence.** Built on open data from the Ministry of Social Development,
 > the Ministry of Education and the Treasury — see
 > [ATTRIBUTION.md](ATTRIBUTION.md) and [DATA_SOURCES.yaml](DATA_SOURCES.yaml)
-> for every source, licence and modification. No licence is recorded for any
-> source in this repository's own records, so every dataset is flagged
-> **unverified** rather than asserted as CC BY 4.0. Demonstration of method only:
+> for every source, licence and modification. Licences were verified at source on
+> 2026-08-30: **CC BY 4.0** for 24 of the 25 datasets, **CC BY 3.0 NZ** for the
+> legacy 2017 Child, Youth and Family series. Ten of the 25 rest on an
+> agency-wide statement rather than a dataset-specific one and stay flagged for
+> confirmation; none is unverified. Demonstration of method only:
 > the data is modified — reshaped out of the publishers' worksheet layouts into a
 > conformed mart — and must not be relied on for operational, policy or reporting
 > purposes.
@@ -147,8 +149,13 @@ Two licences apply, to two different things:
   pipeline in this repository, and nothing else.
 - **Data** — see [LICENSE-DATA](LICENSE-DATA). The underlying data remains the
   property of the publishing agencies and is used under their own terms.
-  [DATA_SOURCES.yaml](DATA_SOURCES.yaml) records the source, licence status,
-  retrieval date and modifications for every dataset;
-  [ATTRIBUTION.md](ATTRIBUTION.md) is the human-readable version of the same
-  record. No licence is recorded for any source, so all of them are currently
-  flagged as unverified.
+  [DATA_SOURCES.yaml](DATA_SOURCES.yaml) records the source, licence, the basis
+  and evidence URL for that licence, the retrieval date and the modifications for
+  every dataset; [ATTRIBUTION.md](ATTRIBUTION.md) is the human-readable version
+  of the same record.
+
+  Licences were verified at source on 2026-08-30. Twenty-four of the 25 sourced
+  datasets are **CC BY 4.0**; the legacy 2017 Child, Youth and Family series is
+  **CC BY 3.0 NZ**. Fifteen were established from the dataset's own page or its
+  own data.govt.nz catalogue record; ten rest only on an agency-wide statement
+  and keep `licence_issue: true` for that reason. None is unverified.

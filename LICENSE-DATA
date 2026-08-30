@@ -16,22 +16,49 @@ remains under its publishers' licences, not under MIT. The publishers are:
   - the Treasury
 
 DATA_SOURCES.yaml is the authoritative record. For every dataset it states the
-publisher, the source URL, the licence status, the date the files were retrieved
-and exactly how the data was modified. ATTRIBUTION.md carries the same record in
+publisher, the source URL, the licence, the basis on which that licence was
+established and the URL it was read from, the date the files were retrieved and
+exactly how the data was modified. ATTRIBUTION.md carries the same record in
 readable form, grouped by publisher.
 
-Licence status: unverified
---------------------------
+Licence status: verified 2026-08-30
+-----------------------------------
 
-No licence is recorded for any source dataset anywhere in this repository or in
-the pipeline that produced it. New Zealand government statistical releases are
-normally licensed CC BY 4.0 under NZGOAL, and that is the expectation for all
-three publishers — but it is an expectation, not a verified fact, and it must
-not be treated as one. Every dataset in DATA_SOURCES.yaml is flagged
-licence_issue: true for this reason.
+Every one of the 25 sourced datasets was checked against its publisher online on
+2026-08-30. All 25 carry a named licence and every one is a clean attribution
+licence. None is unverified.
+
+  - CC BY 4.0 International (https://creativecommons.org/licenses/by/4.0/)
+    for 24 datasets — all Ministry of Social Development, Ministry of Education
+    (Education Counts) and Treasury material published from 2018 onward.
+
+  - CC BY 3.0 New Zealand (https://creativecommons.org/licenses/by/3.0/nz/)
+    for one: the legacy Child, Youth and Family national and local level data of
+    June 2017. MSD relicensed from 3.0 NZ to 4.0 International between the 2017
+    and 2018 release vintages, and the 2017 files still carry the older mark.
+    That function transferred to Oranga Tamariki in April 2017; Oranga Tamariki
+    publishes the successor series, also under CC BY 3.0 NZ, and none of its data
+    is used here.
+
+Each licence is recorded with a licence_basis:
+
+  - dataset_page (15 datasets) — read from the dataset's own page or its own
+    data.govt.nz catalogue record, which carries an explicit licence_id.
+
+  - agency_record (10 datasets) — only an agency-wide or site-wide statement was
+    found, not one specific to that dataset. These keep licence_issue: true. The
+    licence is very probably right, but it was inherited rather than asserted for
+    that dataset in particular. Six are MSD series with no data.govt.nz record;
+    four are the Treasury workbooks, whose publication pages return HTTP 403 to
+    every scripted request.
+
+None of the three publishers puts a licence statement in the body of its
+statistics pages; all three rely on a single site-wide copyright page. The three
+statements, and the evidence URL behind every row, are quoted in ATTRIBUTION.md.
 
 Anyone intending to redistribute this data, or to rely on it beyond reading this
-demonstration, should confirm the licence on each publisher's own page first.
+demonstration, should confirm the licence on each publisher's own page first —
+particularly for the ten agency_record rows.
 
 Modification
 ------------

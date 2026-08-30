@@ -1,5 +1,6 @@
 # DATA_SOURCES.yaml - provenance and licence manifest
 generated_by: show-me-org attribution pass, 2026-08-30
+licence_verified: 2026-08-30 (online verification pass)
 repository: https://github.com/celnicconsulting/msd-social-support-explorer
 note: >
   This repository publishes derived artefacts only (the extracts the app
@@ -9,15 +10,85 @@ note: >
   the conformed mart; it also carries META_DOWNLOAD_MANIFEST, which records the
   URL, size, checksum and download date of every upstream file listed below.
 licence_status: >
-  IMPORTANT - the repository's own records (scripts/msd_registry.py, the
-  download and ingest scripts, the build notes and the README) name every source
-  but state no licence for any of them. No licence was verified from the
-  publishers' pages during this pass, because this pass was run offline. Every
-  sourced dataset below therefore carries licence "UNVERIFIED" and
-  licence_issue true. The expectation is CC BY 4.0 under NZGOAL, and the MSD,
-  Education Counts and Treasury pages are the places to confirm it, but that
-  confirmation has not been made and must not be assumed. Nothing has been
-  deleted; this is a flag, not a removal.
+  Every sourced dataset below was checked against its publisher on 2026-08-30.
+  All 25 now carry a named licence, and every one is a clean attribution licence
+  (CC BY 4.0 International, except the legacy Child, Youth and Family series,
+  which is CC BY 3.0 New Zealand). No dataset is unverified.
+
+  Each entry records licence_basis and licence_evidence. licence_basis
+  "dataset_page" means the licence was read from this dataset's own page or its
+  own data.govt.nz catalogue record; "agency_record" means only an
+  agency-wide or site-wide statement was found, not one specific to this
+  dataset; "unverified" means none could be established. licence_issue stays
+  true wherever the basis is agency_record - the licence is very probably right,
+  but it was inherited from a site-wide statement rather than asserted for this
+  dataset in particular, and anyone redistributing should confirm it.
+
+  None of the three publishers puts a licence statement in the body of its
+  statistics pages; all three rely on a single site-wide copyright page. That is
+  why data.govt.nz catalogue records, which carry an explicit licence_id per
+  dataset, are the stronger evidence wherever one exists.
+licence_reference_statements:
+  msd:
+    url: "https://www.msd.govt.nz/about-msd-and-our-work/tools/copyright-statement.html"
+    page_title: "Copyright, disclaimer and privacy statements"
+    quote: >
+      "this copyright material is licensed for re-use under Creative Commons
+      Attribution (CC-BY) 4.0 International Licence"
+    cc_url: "https://creativecommons.org/licenses/by/4.0/"
+    exclusions: "logos, emblems, trademarks, photography, imagery and site design elements"
+    note: >
+      The current MSD site-wide statement is CC BY 4.0 International, not
+      CC BY 3.0 NZ. The 3.0 NZ finding in the sibling build is real but historic:
+      MSD's data.govt.nz records dated 2017 and earlier (benefit fact sheets and
+      social housing register up to December 2017, the CYF key statistics, the
+      Social Report 2016) carry licence_id CC-BY-NZ-3.0, while every record from
+      March 2018 onward carries CC-BY-4.0. MSD relicensed at the 3.0 NZ to 4.0
+      International transition; files of 2017 vintage still carry the older mark.
+  education_counts:
+    url: "https://www.educationcounts.govt.nz/site-info/privacy"
+    page_title: "Copyright, legal & privacy | Education Counts"
+    quote: >
+      "The copyright material on the Education Counts website is protected by
+      copyright owned by Ministry of Education [on behalf of the Crown] or its
+      licensors" and "is licensed for re-use under the Creative Commons
+      Attribution 4.0 International licence"
+    cc_url: "https://creativecommons.org/licenses/by/4.0/"
+    access_note: >
+      educationcounts.govt.nz returns HTTP 403 to every non-browser client, this
+      page included, so it could not be fetched directly; the wording above was
+      read from the search index. The primary evidence used for the twelve
+      Education Counts datasets is therefore the Ministry of Education's own
+      data.govt.nz catalogue record for the Tertiary participation collection,
+      which fetched cleanly and carries an explicit licence_id.
+    caution: >
+      Do not substitute www.education.govt.nz/copyright for this statement. That
+      is a different site and carries a NON-COMMERCIAL licence
+      ("Material on this website is licensed for re-use under the Creative
+      Commons Attribution-Non Commercial 4.0 New Zealand licence"). It does not
+      apply to Education Counts, which is CC BY 4.0.
+  treasury:
+    url: "https://www.treasury.govt.nz/copyright-and-licensing"
+    page_title: "Copyright and licensing | The Treasury New Zealand"
+    quote: >
+      "Most material on the Treasury website is protected by copyright owned by
+      the Treasury on behalf of the Crown, and unless indicated otherwise for
+      specific items or collections of content, this Crown copyright material is
+      licensed for re-use under the Creative Commons Attribution 4.0
+      International licence"
+    cc_url: "https://creativecommons.org/licenses/by/4.0/"
+    access_note: >
+      Every treasury.govt.nz HTML page returns HTTP 403 to scripted requests,
+      including this one and both 2025 publication pages; the wording above was
+      read from the search index rather than fetched. Corroborated by
+      data.govt.nz: every dataset published there by The Treasury carries
+      licence_id CC-BY-4.0, with licence_url https://creativecommons.org/licenses/by/4.0/.
+  oranga_tamariki:
+    url: "https://www.orangatamariki.govt.nz/about-this-site/copyright/"
+    quote: >
+      "Unless indicated otherwise, this copyright material is licensed for
+      re-use under Creative Commons Attribution 3.0 New Zealand Licence."
+    cc_url: "https://creativecommons.org/licenses/by/3.0/nz/legalcode"
 datasets:
 
   # ---------- Ministry of Social Development ----------
@@ -25,13 +96,18 @@ datasets:
     title: "Quarterly Benefit Fact Sheets"
     publisher: "Ministry of Social Development"
     source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/benefit/index.html"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/benefit-fact-sheets-december-2020"
+    licence_issue: false
     licence_note: >
-      No licence recorded anywhere in this repository or its build scripts.
-      Expected CC BY 4.0 under NZGOAL; confirm on the MSD statistics pages
-      before relying on redistribution.
+      Verified 2026-08-30. MSD's own data.govt.nz catalogue records for this
+      series carry licence_id "CC-BY-4.0", licence_title "Creative Commons
+      Attribution 4.0 International", and a source url identical to the
+      source_url above. Records of 2017 vintage and earlier in the same series
+      carry CC-BY-NZ-3.0; every record from March 2018 onward, and everything
+      this repository publishes (2019 onward), is CC BY 4.0.
     retrieved: "2026-08-22"
     modified: true
     modifications: "downloaded, staged as cell grids, resolved into conformed facts, trimmed to 2019 onward for publication"
@@ -47,10 +123,18 @@ datasets:
     title: "Monthly Benefits Update"
     publisher: "Ministry of Social Development"
     source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/monthly-reporting/"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.msd.govt.nz/about-msd-and-our-work/tools/copyright-statement.html"
     licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence_note: >
+      Verified 2026-08-30 at agency level only. The release page carries no
+      licence statement in its body - only the site-wide footer link to MSD's
+      copyright statement, which reads "this copyright material is licensed for
+      re-use under Creative Commons Attribution (CC-BY) 4.0 International
+      Licence". No data.govt.nz record exists for this series, so nothing
+      dataset-specific was found.
     retrieved: "2026-08-22"
     modified: true
     modifications: "downloaded, staged as cell grids, resolved into conformed monthly facts"
@@ -65,10 +149,19 @@ datasets:
     title: "Monthly Housing Update, and the Housing and Transfer Registers"
     publisher: "Ministry of Social Development"
     source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/housing/monthly-housing-reporting.html"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/social-housing-register-december-2020"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30. MSD's data.govt.nz records for the Social Housing
+      Register carry licence_id "CC-BY-4.0" and describe exactly the register
+      component of this entry - "When New Zealanders are in need of public
+      housing, their needs are recorded on either the Housing Register or the
+      Transfer Register". The catalogue record covers the register half of this
+      entry; the monthly housing update half rests on the same MSD site-wide
+      CC BY 4.0 statement.
     retrieved: "2026-08-22"
     modified: true
     modifications: "downloaded, staged as cell grids, resolved into emergency-housing and register facts"
@@ -83,10 +176,16 @@ datasets:
     title: "Emergency Housing Special Needs Grants by territorial authority"
     publisher: "Ministry of Social Development"
     source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/housing/emergency-housing.html"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.msd.govt.nz/about-msd-and-our-work/tools/copyright-statement.html"
     licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence_note: >
+      Verified 2026-08-30 at agency level only. The emergency housing page was
+      read and carries no Creative Commons badge or licence statement in its
+      body; only the site-wide MSD copyright statement (CC BY 4.0 International)
+      applies. No data.govt.nz record exists for this series.
     retrieved: "2026-08-22"
     modified: true
     modifications: "downloaded, staged as entity-matrix grids, resolved into FACT_EMERGENCY_HOUSING_TA"
@@ -101,10 +200,17 @@ datasets:
     title: "StudyLink quarterly statistics (Student Allowance and Student Loan)"
     publisher: "Ministry of Social Development (StudyLink)"
     source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/studylink/index.html"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.msd.govt.nz/about-msd-and-our-work/tools/copyright-statement.html"
     licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence_note: >
+      Verified 2026-08-30 at agency level only. The StudyLink statistics page was
+      read and carries no licence statement in its body; only the site-wide MSD
+      copyright statement (CC BY 4.0 International) applies. StudyLink is a
+      service line of MSD and is covered by the same statement. No data.govt.nz
+      record exists for this series.
     retrieved: "2026-08-22"
     modified: true
     modifications: >
@@ -122,10 +228,15 @@ datasets:
     title: "Weekly income support update"
     publisher: "Ministry of Social Development"
     source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/weekly-reporting/index.html"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.msd.govt.nz/about-msd-and-our-work/tools/copyright-statement.html"
     licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence_note: >
+      Verified 2026-08-30 at agency level only - site-wide MSD copyright
+      statement (CC BY 4.0 International). No data.govt.nz record exists for
+      this series.
     retrieved: "2026-08-22"
     modified: true
     modifications: >
@@ -142,14 +253,18 @@ datasets:
     title: "COVID-19 wage subsidy statistics"
     publisher: "Ministry of Social Development"
     source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/covid-19/who-received-the-covid-19-wage-subsidies-may-2022.html"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.msd.govt.nz/about-msd-and-our-work/tools/copyright-statement.html"
     licence_issue: true
     licence_note: >
-      No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL;
-      unconfirmed. The COVID-19 statistics index page returned 404 during
-      discovery, so no canonical landing page was captured - the URL above is one
-      of the release pages the files were actually found on.
+      Verified 2026-08-30 at agency level only. The May 2022 release page still
+      resolves (it is not a 404) and was read; it carries no licence statement in
+      its body, so only the site-wide MSD copyright statement (CC BY 4.0
+      International) applies. The COVID-19 statistics index page remains
+      unavailable, so no canonical landing page exists for this series, and no
+      data.govt.nz record was found for it.
     retrieved: "2026-08-22"
     modified: true
     modifications: >
@@ -166,10 +281,18 @@ datasets:
     title: "Summary of benefit forecasts (BEFU, HYEFU and PREFU vintages, 2020-2025)"
     publisher: "Ministry of Social Development"
     source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/befu/budget-economic-and-fiscal-update-2025.html"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.msd.govt.nz/about-msd-and-our-work/tools/copyright-statement.html"
     licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence_note: >
+      Verified 2026-08-30 at agency level only. The BEFU 2025 forecast page was
+      read and carries no licence statement in its body; only the site-wide MSD
+      copyright statement (CC BY 4.0 International) applies. Note that these are
+      MSD's own benefit forecasts, published by MSD and fed into the Treasury's
+      fiscal update - they are MSD copyright, not Treasury copyright, though both
+      agencies license under CC BY 4.0.
     retrieved: "2026-08-22"
     modified: true
     modifications: "downloaded, staged, resolved into FACT_BENEFIT_FORECAST with actual and forecast rows kept apart"
@@ -182,15 +305,36 @@ datasets:
 
   - id: msd_cyf_child_protection
     title: "Child, Youth and Family national and local level data (June 2017)"
-    publisher: "Ministry of Social Development"
+    publisher: "Ministry of Social Development (Child, Youth and Family, to April 2017)"
+    current_publisher: "Oranga Tamariki - Ministry for Children"
     source_url: "https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/statistics/cyf/findings.html"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
+    licence: "CC BY 3.0 NZ"
+    licence_url: "https://creativecommons.org/licenses/by/3.0/nz/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/child-youth-and-family-key-statistics"
+    licence_issue: false
     licence_note: >
-      No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL;
-      unconfirmed. This is a legacy series - the function moved to Oranga Tamariki
-      in 2017 - so the publishing agency for any current equivalent differs.
+      Verified 2026-08-30. This series has its own data.govt.nz catalogue record,
+      "Child Youth and Family - Key Statistics", published by the Ministry of
+      Social Development with licence_id "CC-BY-NZ-3.0", licence_title "Creative
+      Commons Attribution 3.0 New Zealand", licence_url
+      https://creativecommons.org/licenses/by/3.0/nz/ and the note "CYF was part
+      of MSD until April 2017". Its metadata was last modified 2017-06-12 and it
+      has not been relicensed; these 2017 files are CC BY 3.0 NZ, not 4.0.
+
+      Current publisher: the care and protection function transferred to Oranga
+      Tamariki - Ministry for Children in April 2017, and Oranga Tamariki now
+      publishes the successor statistics (reports of concern, further assessments,
+      family group conferences, entries to and children in care and protection
+      custody) at
+      https://www.orangatamariki.govt.nz/about-us/information-releases/statistics-about-how-we-work-with-children/
+      and https://www.orangatamariki.govt.nz/about-us/performance-and-monitoring/safety-of-children-in-care/.
+      Oranga Tamariki's site-wide statement, read at
+      https://www.orangatamariki.govt.nz/about-this-site/copyright/, is "Unless
+      indicated otherwise, this copyright material is licensed for re-use under
+      Creative Commons Attribution 3.0 New Zealand Licence." So the successor
+      series is also CC BY 3.0 NZ. This repository holds only the legacy 2017 MSD
+      files; no Oranga Tamariki data is used here.
     retrieved: "2026-08-22"
     modified: true
     modifications: >
@@ -207,14 +351,34 @@ datasets:
   # participation collection. Education Counts refuses scripted requests, so the
   # workbooks were supplied manually rather than crawled; no per-file URL was
   # captured, only the collection landing page.
+  #
+  # Licence evidence for all twelve is the Ministry of Education's own
+  # data.govt.nz catalogue record for that collection,
+  # https://catalogue.data.govt.nz/dataset/tertiary-participation - licence_id
+  # "CC-BY-4.0", licence_title "Creative Commons Attribution 4.0 International",
+  # licence_url https://creativecommons.org/licenses/by/4.0/, and a record url of
+  # exactly https://www.educationcounts.govt.nz/statistics/tertiary-participation,
+  # the source_url recorded for every entry below. Every sibling Education Counts
+  # collection in the same catalogue (Beyond study, Participation rates in
+  # tertiary education, Participation in industry training, Maori tertiary
+  # education, Tertiary - Research) also carries CC-BY-4.0.
   - id: moe_provider_based_enrolments
     title: "Provider-based enrolments (ENR.10), tertiary participation"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection, whose url is exactly this
+      entry's source_url and whose licence_id is "CC-BY-4.0". educationcounts.govt.nz
+      itself returns HTTP 403 to non-browser clients, so its own copyright page
+      could not be fetched directly; its wording (CC BY 4.0 International, Ministry
+      of Education on behalf of the Crown) was confirmed from the search index and
+      agrees with the catalogue record.
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually, staged as cell grids, resolved into FACT_TERTIARY_ENROLMENT"
@@ -229,10 +393,15 @@ datasets:
     title: "Provider-based equivalent full-time students (EFT.9), tertiary participation"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0",
+      record url identical to this entry's source_url).
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually, staged as cell grids, resolved into FACT_TERTIARY_ENROLMENT"
@@ -247,10 +416,15 @@ datasets:
     title: "Provider-based enrolments and EFTS by field of study"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0",
+      record url identical to this entry's source_url).
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -264,10 +438,18 @@ datasets:
     title: "Graduate progression rates"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection, which is this entry's
+      recorded source_url. Graduate progression is published by Education Counts
+      under its sibling "Beyond study" collection, whose own catalogue record in
+      the same catalogue also carries licence_id "CC-BY-4.0", so the licence is
+      the same either way.
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -281,10 +463,16 @@ datasets:
     title: "Tertiary participation rates, 2003-2025"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0").
+      The sibling record "Participation rates in tertiary education" in the same
+      catalogue also carries CC-BY-4.0.
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -298,10 +486,14 @@ datasets:
     title: "Age-standardised tertiary participation rates, 2003-2025"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0").
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -315,10 +507,16 @@ datasets:
     title: "Participation in workplace-based learning"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0").
+      The sibling record "Participation in industry training" in the same
+      catalogue also carries CC-BY-4.0.
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -332,10 +530,14 @@ datasets:
     title: "Targeted training programmes"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0").
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -349,10 +551,14 @@ datasets:
     title: "Secondary-Tertiary Alignment Resource (STAR)"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0").
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -366,10 +572,14 @@ datasets:
     title: "Adult and Community Education"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0").
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -383,10 +593,16 @@ datasets:
     title: "Te reo Maori language course enrolments, 2016-2025"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0").
+      The sibling record "Maori tertiary education" in the same catalogue also
+      carries CC-BY-4.0.
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -400,10 +616,14 @@ datasets:
     title: "Language course enrolments, 2016-2025"
     publisher: "Ministry of Education (Education Counts)"
     source_url: "https://www.educationcounts.govt.nz/statistics/tertiary-participation"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
-    licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: dataset_page
+    licence_evidence: "https://catalogue.data.govt.nz/dataset/tertiary-participation"
+    licence_issue: false
+    licence_note: >
+      Verified 2026-08-30 from the Ministry of Education's data.govt.nz catalogue
+      record for the Tertiary participation collection (licence_id "CC-BY-4.0").
     retrieved: "2026-08-22"
     modified: true
     modifications: "supplied manually and staged; not promoted to a published fact"
@@ -414,18 +634,35 @@ datasets:
       - stage/MOE__TERTIARY_LANGUAGE_COURSES/**
 
   # ---------- The Treasury ----------
+  # The publication pages that carry these files were located during the 2026-08-30
+  # verification pass, closing the gap noted in the original manifest:
+  #   BEFU 2025 - https://www.treasury.govt.nz/publications/efu/budget-economic-and-fiscal-update-2025
+  #   FSGNZ 2025 - https://www.treasury.govt.nz/publications/year-end/financial-statements-2025
+  # Both, and the Treasury copyright page itself, return HTTP 403 to scripted
+  # requests, so neither could be read directly. The licence therefore rests on
+  # the Treasury's site-wide copyright and licensing statement, corroborated by
+  # every Treasury record in data.govt.nz carrying licence_id CC-BY-4.0.
   - id: tsy_fiscal_update_expense_tables
     title: "Budget Economic and Fiscal Update 2025 - core Crown expense tables"
     publisher: "The Treasury"
     source_url: "https://www.treasury.govt.nz/sites/default/files/2025-05/befu25-data-expense-tables.xlsx"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    publication_page: "https://www.treasury.govt.nz/publications/efu/budget-economic-and-fiscal-update-2025"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.treasury.govt.nz/copyright-and-licensing"
     licence_issue: true
     licence_note: >
-      No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL;
-      unconfirmed. Only the data file URL was captured - the Treasury's HTML
-      pages refuse scripted requests, so the publication page carrying the
-      licence statement was never read.
+      Verified 2026-08-30 at agency level only. The publication page carrying
+      this workbook was located (see publication_page) but returns HTTP 403 to
+      scripted requests, as does the Treasury copyright page itself, so neither
+      was read directly; the Treasury's statement - "unless indicated otherwise
+      for specific items or collections of content, this Crown copyright material
+      is licensed for re-use under the Creative Commons Attribution 4.0
+      International licence" - was read from the search index. Corroborated by
+      data.govt.nz, where every Treasury dataset carries licence_id CC-BY-4.0,
+      including the earlier BEFU and HYEFU chart-and-data releases of the same
+      series. No data.govt.nz record exists for the 2025 vintage.
     retrieved: "2026-08-22"
     modified: true
     modifications: >
@@ -442,10 +679,18 @@ datasets:
     title: "Budget Economic and Fiscal Update 2025 - chart data"
     publisher: "The Treasury"
     source_url: "https://www.treasury.govt.nz/sites/default/files/2025-05/befu25-charts-data.xlsx"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    publication_page: "https://www.treasury.govt.nz/publications/efu/budget-economic-and-fiscal-update-2025"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.treasury.govt.nz/copyright-and-licensing"
     licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence_note: >
+      Verified 2026-08-30 at agency level only - Treasury site-wide CC BY 4.0
+      International statement, corroborated by every Treasury record in
+      data.govt.nz carrying licence_id CC-BY-4.0, including the directly
+      equivalent "Budget Economic and Fiscal Update 2016 - Charts and Data".
+      The 2025 publication page 403s to scripted requests and was not read.
     retrieved: "2026-08-22"
     modified: true
     modifications: "downloaded and staged; not promoted to a published fact"
@@ -460,10 +705,20 @@ datasets:
     title: "Financial Statements of the Government of New Zealand 2025"
     publisher: "The Treasury"
     source_url: "https://www.treasury.govt.nz/sites/default/files/2025-10/fsgnz-2025.xlsx"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    publication_page: "https://www.treasury.govt.nz/publications/year-end/financial-statements-2025"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.treasury.govt.nz/copyright-and-licensing"
     licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence_note: >
+      Verified 2026-08-30 at agency level only - Treasury site-wide CC BY 4.0
+      International statement, corroborated by the "Month End Financial
+      Statements" record in data.govt.nz, published by The Treasury with
+      licence_id CC-BY-4.0 and licence_url https://creativecommons.org/licenses/by/4.0/.
+      The publication page for the year ended 30 June 2025 was located (see
+      publication_page, published 9 October 2025) but 403s to scripted requests
+      and was not read.
     retrieved: "2026-08-22"
     modified: true
     modifications: "downloaded and staged; not promoted to a published fact"
@@ -478,10 +733,16 @@ datasets:
     title: "Financial Statements of the Government of New Zealand 2025 - chart data"
     publisher: "The Treasury"
     source_url: "https://www.treasury.govt.nz/sites/default/files/2025-10/fsgnz-2025-charts-data.xlsx"
-    licence: "UNVERIFIED"
-    licence_url: "unknown"
+    publication_page: "https://www.treasury.govt.nz/publications/year-end/financial-statements-2025"
+    licence: "CC BY 4.0"
+    licence_url: "https://creativecommons.org/licenses/by/4.0/"
+    licence_basis: agency_record
+    licence_evidence: "https://www.treasury.govt.nz/copyright-and-licensing"
     licence_issue: true
-    licence_note: "No licence recorded in this repository. Expected CC BY 4.0 under NZGOAL; unconfirmed."
+    licence_note: >
+      Verified 2026-08-30 at agency level only - Treasury site-wide CC BY 4.0
+      International statement, corroborated by data.govt.nz. The publication page
+      403s to scripted requests and was not read.
     retrieved: "2026-08-22"
     modified: true
     modifications: "downloaded and staged; not promoted to a published fact"
@@ -498,6 +759,8 @@ datasets:
     publisher: "Celnic Consulting (generated)"
     source_url: "n/a"
     licence: "CC0 / demonstration only"
+    licence_basis: not_applicable
+    licence_evidence: "n/a - authored in this repository, not sourced"
     modified: false
     note: >
       DIM_GEOGRAPHY carries a matching key and an indicative centroid for each
@@ -513,6 +776,22 @@ datasets:
 # specification was deliberately not built: every value in every fact traces to a
 # published file recorded in META_DOWNLOAD_MANIFEST. The only non-agency values
 # anywhere are the indicative map centroids above.
+
+licence_summary:
+  verified_on: "2026-08-30"
+  total_sourced_datasets: 25
+  by_basis:
+    dataset_page: 15   # 3 MSD, 12 Ministry of Education
+    agency_record: 10  # 6 MSD, 4 Treasury
+    unverified: 0
+  by_licence:
+    "CC BY 4.0": 24
+    "CC BY 3.0 NZ": 1  # msd_cyf_child_protection, the legacy 2017 series
+  licence_issue_true: 10   # every agency_record entry
+  licence_issue_false: 15  # every dataset_page entry, all clean attribution licences
+  still_blocked:
+    - "educationcounts.govt.nz - HTTP 403 to every non-browser client; resolved via the Ministry of Education's data.govt.nz catalogue record"
+    - "treasury.govt.nz HTML - HTTP 403 to every scripted request, including the copyright page and both 2025 publication pages; resolved at agency level only"
 
 repository_files:
   - path: data/msd_platform_public.duckdb

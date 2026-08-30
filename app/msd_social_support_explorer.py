@@ -1318,9 +1318,11 @@ def render_attribution():
         st.markdown(
             "Built on open data from the **Ministry of Social Development**, the "
             "**Ministry of Education** and **the Treasury** — modified: reshaped "
-            "out of their worksheet layouts into a conformed mart. No licence is "
-            "recorded for any source in this platform's records, so every dataset "
-            "is flagged **unverified** rather than asserted as CC BY 4.0. "
+            "out of their worksheet layouts into a conformed mart. Licences were "
+            "verified at source on 2026-08-30: **CC BY 4.0** for 24 of the 25 "
+            "datasets, **CC BY 3.0 NZ** for the legacy 2017 Child, Youth and Family "
+            "series. Ten of the 25 rest on an agency-wide statement rather than a "
+            "dataset-specific one and stay flagged for confirmation. "
             "Demonstration of method, not published statistics. Full provenance: "
             "[ATTRIBUTION.md](https://github.com/celnicconsulting/msd-social-support-explorer/blob/main/ATTRIBUTION.md)."
         )
